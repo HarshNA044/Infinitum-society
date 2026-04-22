@@ -59,7 +59,7 @@ export default function Events_Page() {
   const downloadTicket = () => {
     const doc = new jsPDF();
     doc.setFontSize(26);
-    doc.setTextColor(79, 70, 229); // indigo-600
+    doc.setTextColor(20, 184, 166); // brand-500 (#14b8a6)
     doc.text('INFINITIUM SOCIETY', 20, 30);
     
     doc.setFontSize(18);
@@ -88,15 +88,15 @@ export default function Events_Page() {
   const filteredEvents = events.filter((e: any) => filter === 'All' || e.type === filter);
 
   return (
-    <div className="py-20 px-4 min-h-screen bg-white">
+    <div className="py-20 px-4 min-h-screen bg-[#fcfcfc]">
       <div className="max-w-7xl mx-auto">
         <header className="mb-20 flex flex-col md:flex-row justify-between items-end gap-6">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-50 text-brand-600 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] mb-6 border border-brand-100">
               <Calendar className="w-3 h-3" /> Schedule
             </div>
             <h1 className="text-4xl md:text-8xl font-black text-slate-900 tracking-tighter leading-[0.8] mb-8 italic uppercase">
-              Events & <br /> <span className="text-indigo-600">Archive</span>
+              Events & <br /> <span className="text-brand-600">Archive</span>
             </h1>
           </div>
           <p className="text-slate-500 font-medium max-w-xs text-sm leading-relaxed uppercase tracking-widest text-right">
@@ -113,7 +113,7 @@ export default function Events_Page() {
               className={cn(
                 "px-6 py-2 rounded-full font-bold transition-all",
                 filter === f 
-                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100" 
+                  ? "bg-brand-600 text-white shadow-lg shadow-brand-100" 
                   : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
               )}
             >
@@ -131,18 +131,18 @@ export default function Events_Page() {
               className="bento-card group"
             >
               <div className="mb-6 flex justify-between items-start">
-                <div className="bg-indigo-50 w-12 h-12 rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-100 group-hover:scale-110 transition-transform">
+                <div className="bg-brand-50 w-12 h-12 rounded-2xl flex items-center justify-center text-brand-600 shadow-sm border border-brand-100 group-hover:scale-110 transition-transform">
                   <Calendar className="w-6 h-6" />
                 </div>
                 <span className="text-[10px] bento-tag bg-slate-100 text-slate-500 font-black">{event.date}</span>
               </div>
-              <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tighter uppercase leading-tight group-hover:text-indigo-600 transition-colors">{event.title}</h3>
+              <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tighter uppercase leading-tight group-hover:text-brand-600 transition-colors italic">{event.title}</h3>
               <p className="text-xs text-slate-500 mb-8 leading-relaxed line-clamp-3 font-medium">
                 {event.description}
               </p>
               
               <div className="flex items-center gap-2 text-slate-400 mb-8 text-[10px] font-bold uppercase tracking-widest">
-                <MapPin className="w-3 h-3 text-indigo-600" />
+                <MapPin className="w-3 h-3 text-brand-600" />
                 {event.location}
               </div>
 
@@ -151,7 +151,7 @@ export default function Events_Page() {
                   setSelectedEvent(event);
                   setIsRegistering(true);
                 }}
-                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-indigo-600 transition-all flex items-center justify-center gap-2 group-hover:shadow-lg group-hover:shadow-indigo-600/20 active:scale-95"
+                className="w-full py-4 bg-brand-950 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-brand-600 transition-all flex items-center justify-center gap-2 group-hover:shadow-lg group-hover:shadow-brand-600/20 active:scale-95 border border-brand-900"
               >
                 Get Ticket <ArrowRight className="w-4 h-4" />
               </button>
@@ -189,10 +189,10 @@ export default function Events_Page() {
                      </button>
                    </div>
                    
-                   <div className="bg-slate-900 p-8 rounded-3xl mb-10 text-white relative overflow-hidden">
-                     <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] mb-2">EVENT CONFIRMATION</p>
-                     <p className="text-xl font-bold italic">{selectedEvent?.title}</p>
-                     <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/20 blur-2xl rotate-45 transform translate-x-12 -translate-y-12"></div>
+                   <div className="bg-brand-950 p-8 rounded-3xl mb-10 text-white relative overflow-hidden border border-brand-900">
+                     <p className="text-[10px] font-black text-brand-400 uppercase tracking-[0.3em] mb-2">EVENT CONFIRMATION</p>
+                     <p className="text-xl font-bold italic text-brand-200">{selectedEvent?.title}</p>
+                     <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/20 blur-2xl rotate-45 transform translate-x-12 -translate-y-12"></div>
                    </div>
 
                    <form onSubmit={handleRegister} className="space-y-8">
@@ -204,7 +204,7 @@ export default function Events_Page() {
                             type="text" 
                             value={formData.studentName}
                             onChange={(e) => setFormData({...formData, studentName: e.target.value})}
-                            className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 transition-all outline-none font-bold text-sm"
+                            className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:border-brand-600 focus:ring-4 focus:ring-brand-100 transition-all outline-none font-bold text-sm"
                             placeholder="John Doe"
                           />
                         </div>
@@ -215,7 +215,7 @@ export default function Events_Page() {
                             type="text" 
                             value={formData.rollNo}
                             onChange={(e) => setFormData({...formData, rollNo: e.target.value})}
-                            className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 transition-all outline-none font-bold text-sm"
+                            className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:border-brand-600 focus:ring-4 focus:ring-brand-100 transition-all outline-none font-bold text-sm"
                             placeholder="22/CS/001"
                           />
                         </div>
@@ -227,14 +227,14 @@ export default function Events_Page() {
                          type="email" 
                          value={formData.email}
                          onChange={(e) => setFormData({...formData, email: e.target.value})}
-                         className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 transition-all outline-none font-bold text-sm"
+                         className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:border-brand-600 focus:ring-4 focus:ring-brand-100 transition-all outline-none font-bold text-sm"
                          placeholder="name@arsd.du.ac.in"
                        />
                      </div>
                      <button 
                        disabled={loading}
                        type="submit"
-                       className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black uppercase text-sm tracking-[0.2em] hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/20 active:scale-95 transition-all disabled:opacity-50"
+                       className="w-full py-5 bg-brand-600 text-white rounded-3xl font-black uppercase text-sm tracking-[0.2em] hover:bg-brand-700 hover:shadow-xl hover:shadow-brand-600/20 active:scale-95 transition-all disabled:opacity-50 shadow-lg shadow-brand-600/10"
                      >
                        {loading ? 'Processing...' : 'Confirm Registration'}
                      </button>
@@ -242,12 +242,12 @@ export default function Events_Page() {
                 </div>
               ) : (
                 <div className="p-10 md:p-14 text-center">
-                  <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
+                  <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm border border-emerald-100">
                     <CheckCircle2 className="w-10 h-10" />
                   </div>
                   <h2 className="text-4xl font-black text-slate-900 mb-4 tracking-tighter uppercase italic">Success</h2>
                   <p className="text-xs text-slate-500 mb-10 font-bold uppercase tracking-widest leading-loose">
-                    Registration confirmed for <span className="text-indigo-600">{selectedEvent?.title}</span>. 
+                    Registration confirmed for <span className="text-brand-600 italic">{selectedEvent?.title}</span>. 
                     <br />Save the ticket below.
                   </p>
                   
@@ -266,7 +266,7 @@ export default function Events_Page() {
                   <div className="flex flex-col gap-4">
                     <button 
                       onClick={downloadTicket}
-                      className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black uppercase text-xs tracking-widest flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20"
+                      className="w-full py-5 bg-brand-600 text-white rounded-3xl font-black uppercase text-xs tracking-widest flex items-center justify-center gap-2 hover:bg-brand-700 transition-all shadow-xl shadow-brand-600/20"
                     >
                       <Download className="w-5 h-5" /> Download PDF Ticket
                     </button>

@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   BarChart3, Plus, Scan, Users, Calendar, 
   Trash2, CheckCircle, XCircle, ChevronLeft,
-  LayoutDashboard, ListOrdered, Camera, Linkedin, Edit3
+  LayoutDashboard, ListOrdered, Camera, Linkedin, Edit3,
+  Trophy
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, 
@@ -20,6 +21,7 @@ export default function Admin_Page() {
   const [members, setMembers] = useState<any[]>([]);
   const [stats, setStats] = useState({ totalRegistrations: 0, totalAttendance: 0, eventsCount: 0 });
   const [showAddEvent, setShowAddEvent] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<any>(null);
   const [showMemberModal, setShowMemberModal] = useState(false);
   const [editingMember, setEditingMember] = useState<any>(null);
   
@@ -27,6 +29,15 @@ export default function Admin_Page() {
   const [scanResult, setScanResult] = useState<any>(null);
   const [isScanning, setIsScanning] = useState(false);
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+
+  // New states for expanded control
+  const [achievements, setAchievements] = useState<any[]>([]);
+  const [showAchievementModal, setShowAchievementModal] = useState(false);
+  const [editingAchievement, setEditingAchievement] = useState<any>(null);
+
+  const [gallery, setGallery] = useState<any[]>([]);
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [editingGallery, setEditingGallery] = useState<any>(null);
 
   useEffect(() => {
     loadData();
@@ -36,6 +47,8 @@ export default function Admin_Page() {
     request('/api/events').then(setEvents);
     request('/api/stats').then(setStats);
     request('/api/members').then(setMembers);
+    request('/api/achievements').then(setAchievements);
+    request('/api/gallery').then(setGallery);
   };
 
   const handleMemberSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -69,6 +82,84 @@ export default function Admin_Page() {
       await request(`/api/members/${id}`, { method: 'DELETE' });
       loadData();
     }
+  };
+
+  const handleEventSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      title: formData.get('title'),
+      type: formData.get('type'),
+      date: formData.get('date'),
+      description: formData.get('description'),
+      status: editingEvent?.status || 'Upcoming'
+    };
+
+    if (editingEvent) {
+      await request(`/api/events/${editingEvent.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      });
+    } else {
+      await request('/api/events', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    }
+    setShowAddEvent(false);
+    setEditingEvent(null);
+    loadData();
+  };
+
+  const handleAchievementSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      title: formData.get('title'),
+      description: formData.get('description'),
+      date: formData.get('date')
+    };
+
+    if (editingAchievement) {
+      await request(`/api/achievements/${editingAchievement.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      });
+    } else {
+      await request('/api/achievements', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    }
+    setShowAchievementModal(false);
+    setEditingAchievement(null);
+    loadData();
+  };
+
+  const handleGallerySubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      src: formData.get('src'),
+      title: formData.get('title'),
+      description: formData.get('description'),
+      category: formData.get('category')
+    };
+
+    if (editingGallery) {
+      await request(`/api/gallery/${editingGallery.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      });
+    } else {
+      await request('/api/gallery', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    }
+    setShowGalleryModal(false);
+    setEditingGallery(null);
+    loadData();
   };
 
   useEffect(() => {
@@ -106,7 +197,7 @@ export default function Admin_Page() {
     }
   };
 
-  const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444'];
+  const COLORS = ['#14b8a6', '#0d9488', '#0f766e', '#115e59']; // brand-500, 600, 700, 800
 
   const chartData = events.map((e: any) => ({
     name: e.title.split(':')[0],
@@ -128,16 +219,18 @@ export default function Admin_Page() {
         <nav className="flex flex-col gap-2">
           {[
             { id: 'overview', icon: BarChart3, label: 'Overview' },
-            { id: 'events', icon: ListOrdered, label: 'Events List' },
+            { id: 'events', icon: ListOrdered, label: 'Events' },
             { id: 'members', icon: Users, label: 'Members' },
+            { id: 'achievements', icon: Trophy, label: 'Achievements' },
+            { id: 'gallery', icon: Camera, label: 'Gallery' },
             { id: 'scanner', icon: Scan, label: 'QR Scanner' },
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all",
-                activeTab === tab.id ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100" : "text-zinc-500 hover:bg-zinc-100"
+                "flex items-center gap-3 px-4 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all",
+                activeTab === tab.id ? "bg-brand-600 text-white shadow-lg shadow-brand-600/20" : "text-zinc-500 hover:bg-brand-50 hover:text-brand-600"
               )}
             >
               <tab.icon className="w-5 h-5" />
@@ -156,8 +249,11 @@ export default function Admin_Page() {
           </div>
           {activeTab === 'events' && (
             <button 
-              onClick={() => setShowAddEvent(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-indigo-600 transition-all shadow-xl"
+              onClick={() => {
+                setEditingEvent(null);
+                setShowAddEvent(true);
+              }}
+              className="flex items-center gap-2 px-6 py-3 bg-brand-950 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-brand-600 transition-all shadow-xl shadow-brand-950/20 border border-brand-900"
             >
               <Plus className="w-5 h-5" /> Create Event
             </button>
@@ -168,9 +264,31 @@ export default function Admin_Page() {
                 setEditingMember(null);
                 setShowMemberModal(true);
               }}
-              className="flex items-center gap-2 px-6 py-3 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-indigo-600 transition-all shadow-xl"
+              className="flex items-center gap-2 px-6 py-3 bg-brand-950 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-brand-600 transition-all shadow-xl shadow-brand-950/20 border border-brand-900"
             >
               <Plus className="w-5 h-5" /> Add Member
+            </button>
+          )}
+          {activeTab === 'achievements' && (
+            <button 
+              onClick={() => {
+                setEditingAchievement(null);
+                setShowAchievementModal(true);
+              }}
+              className="flex items-center gap-2 px-6 py-3 bg-brand-950 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-brand-600 transition-all shadow-xl shadow-brand-950/20 border border-brand-900"
+            >
+              <Plus className="w-5 h-5" /> Add Achievement
+            </button>
+          )}
+          {activeTab === 'gallery' && (
+            <button 
+              onClick={() => {
+                setEditingGallery(null);
+                setShowGalleryModal(true);
+              }}
+              className="flex items-center gap-2 px-6 py-3 bg-brand-950 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-brand-600 transition-all shadow-xl shadow-brand-950/20 border border-brand-900"
+            >
+              <Plus className="w-5 h-5" /> Add Image
             </button>
           )}
         </header>
@@ -182,11 +300,11 @@ export default function Admin_Page() {
                 <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] mb-2">Total Registrations</p>
                 <p className="text-4xl font-black text-slate-900 tracking-tighter">{stats.totalRegistrations}</p>
                 <div className="mt-4 h-1 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-indigo-600 w-3/4"></div>
+                  <div className="h-full bg-brand-600 w-3/4"></div>
                 </div>
               </div>
-              <div className="bento-card bg-indigo-600 p-8 text-white border-none shadow-indigo-600/20">
-                <p className="text-indigo-200 font-bold text-[10px] uppercase tracking-[0.2em] mb-2">Total Attendance</p>
+              <div className="bento-card bg-brand-600 p-8 text-white border-none shadow-brand-600/20">
+                <p className="text-brand-100 font-bold text-[10px] uppercase tracking-[0.2em] mb-2">Total Attendance</p>
                 <p className="text-4xl font-black tracking-tighter">{stats.totalAttendance}</p>
                 <div className="mt-4 h-1 bg-white/20 rounded-full overflow-hidden">
                   <div className="h-full bg-white w-1/2"></div>
@@ -206,7 +324,7 @@ export default function Admin_Page() {
                    <h3 className="text-xs font-black uppercase text-slate-400 tracking-widest">Event Performance</h3>
                    <div className="flex gap-2">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
+                        <div className="w-2 h-2 bg-brand-600 rounded-full"></div>
                         <span className="text-[10px] font-bold text-slate-400 uppercase">Regs</span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -223,14 +341,14 @@ export default function Admin_Page() {
                      <Tooltip 
                         contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px', fontWeight: 'bold'}}
                      />
-                     <Bar dataKey="registrations" fill="#4f46e5" radius={[6, 6, 0, 0]} barSize={20} />
+                     <Bar dataKey="registrations" fill="#14b8a6" radius={[6, 6, 0, 0]} barSize={20} />
                      <Bar dataKey="attendance" fill="#10b981" radius={[6, 6, 0, 0]} barSize={20} />
                    </BarChart>
                  </ResponsiveContainer>
                </div>
                
-               <div className="bento-card bg-slate-900 border-none text-white">
-                 <h3 className="text-xs font-black uppercase text-indigo-400 tracking-widest mb-8">Recent Activity</h3>
+               <div className="bento-card bg-brand-950 border border-brand-900 text-white">
+                 <h3 className="text-xs font-black uppercase text-brand-400 tracking-[0.3em] mb-8">Recent Activity</h3>
                  <div className="space-y-6">
                     {[
                       { user: "Aryan S.", action: "Registered", time: "2m ago", event: "Pulsar 2026" },
@@ -238,15 +356,15 @@ export default function Admin_Page() {
                       { user: "Kabir R.", action: "Registered", time: "1h ago", event: "UI Workshop" },
                       { user: "Mehak P.", action: "Feedback", time: "2h ago", event: "Pulsar 2026" },
                     ].map((item, i) => (
-                      <div key={i} className="flex gap-4 items-start border-l-2 border-white/10 pl-4 py-1">
+                      <div key={i} className="flex gap-4 items-start border-l-2 border-brand-800 pl-4 py-1">
                         <div className="flex-1">
-                          <p className="text-xs font-bold"><span className="text-indigo-400">{item.user}</span> {item.action}</p>
-                          <p className="text-[10px] text-white/40 uppercase font-black tracking-widest mt-1">{item.event} • {item.time}</p>
+                          <p className="text-xs font-bold text-brand-100"><span className="text-brand-400">{item.user}</span> {item.action}</p>
+                          <p className="text-[9px] text-brand-100/40 uppercase font-black tracking-widest mt-1">{item.event} • {item.time}</p>
                         </div>
                       </div>
                     ))}
                  </div>
-                 <button className="mt-auto w-full py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">
+                 <button className="mt-auto w-full py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brand-600 transition-all">
                     View Full Audit Log
                  </button>
                </div>
@@ -255,8 +373,8 @@ export default function Admin_Page() {
         )}
 
         {activeTab === 'events' && (
-          <div className="bg-white rounded-[2rem] border border-zinc-100 shadow-sm overflow-hidden">
-             <table className="w-full text-left border-collapse">
+          <div className="bg-white rounded-[2rem] border border-zinc-100 shadow-sm overflow-x-auto">
+             <table className="w-full text-left border-collapse min-w-[800px]">
                <thead className="bg-zinc-50">
                  <tr>
                    <th className="px-8 py-5 text-sm font-bold text-zinc-500 tracking-wider">EVENT NAME</th>
@@ -277,14 +395,118 @@ export default function Admin_Page() {
                         <span className="px-3 py-1 bg-zinc-100 text-zinc-600 rounded-full text-xs font-bold">{event.type}</span>
                      </td>
                      <td className="px-8 py-6 font-bold">{event.stats.registrations}</td>
-                     <td className="px-8 py-6 font-bold text-indigo-600">{event.stats.attendance}</td>
+                     <td className="px-8 py-6 font-bold text-brand-700">{event.stats.attendance}</td>
                      <td className="px-8 py-6 text-right">
-                        <button className="p-2 hover:text-red-600 transition-colors"><Trash2 className="w-5 h-5" /></button>
+                        <div className="flex justify-end gap-2">
+                          <button 
+                            onClick={() => {
+                              setEditingEvent(event);
+                              setShowAddEvent(true);
+                            }}
+                            className="px-3 py-1.5 bg-brand-50 text-brand-600 rounded-lg text-xs font-bold hover:bg-brand-100 transition-all flex items-center gap-1 border border-brand-100"
+                            title="Edit Event"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" /> Edit
+                          </button>
+                          <button 
+                            onClick={async () => {
+                              if(confirm('Delete event?')) {
+                                await request(`/api/events/${event.id}`, { method: 'DELETE' });
+                                loadData();
+                              }
+                            }}
+                            className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-bold hover:bg-red-100 transition-all flex items-center gap-1 border border-red-100"
+                            title="Delete Event"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" /> Delete
+                          </button>
+                        </div>
                      </td>
                    </tr>
                  ))}
                </tbody>
              </table>
+          </div>
+        )}
+
+        {activeTab === 'achievements' && (
+          <div className="space-y-6">
+            {achievements.map((a: any) => (
+              <div key={a.id} className="bg-white p-8 rounded-[2.5rem] border border-zinc-100 shadow-sm flex justify-between items-center group">
+                <div>
+                  <h3 className="text-xl font-black text-zinc-900 uppercase italic tracking-tighter mb-1">{a.title}</h3>
+                  <p className="text-xs text-brand-600 font-bold uppercase tracking-widest mb-4">{a.date}</p>
+                  <p className="text-sm text-zinc-500 font-medium max-w-xl">{a.description}</p>
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
+                  <button 
+                    onClick={() => {
+                      setEditingAchievement(a);
+                      setShowAchievementModal(true);
+                    }}
+                    className="p-3 bg-brand-50 text-brand-600 rounded-xl hover:bg-brand-100 transition-all border border-brand-100"
+                    title="Edit Achievement"
+                  >
+                    <Edit3 className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={async () => {
+                      if(confirm('Delete achievement?')) {
+                        await request(`/api/achievements/${a.id}`, { method: 'DELETE' });
+                        loadData();
+                      }
+                    }}
+                    className="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all border border-red-100"
+                    title="Delete Achievement"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === 'gallery' && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {gallery.map((item: any) => (
+              <div key={item.id} className="relative group rounded-[2.5rem] overflow-hidden border border-zinc-100 shadow-sm bg-white">
+                <div className="aspect-square overflow-hidden relative">
+                  <img src={item.src} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-grayscale duration-500" referrerPolicy="no-referrer" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-6 text-center">
+                    <p className="text-white text-[10px] font-black uppercase tracking-widest leading-relaxed line-clamp-4">{item.description}</p>
+                  </div>
+                </div>
+                <div className="p-5 flex flex-col gap-3">
+                  <div>
+                    <h4 className="text-zinc-900 font-bold text-sm line-clamp-1">{item.title}</h4>
+                    <p className="text-brand-600 text-[10px] font-black uppercase tracking-widest">{item.category}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => {
+                        setEditingGallery(item);
+                        setShowGalleryModal(true);
+                      }}
+                      className="flex-1 py-2 bg-zinc-50 text-zinc-600 rounded-xl text-xs font-bold hover:bg-brand-50 hover:text-brand-600 transition-all border border-zinc-100 flex items-center justify-center gap-2"
+                    >
+                      <Edit3 className="w-3 h-3" /> Edit
+                    </button>
+                    <button 
+                      onClick={async () => {
+                        if(confirm('Delete image?')) {
+                          await request(`/api/gallery/${item.id}`, { method: 'DELETE' });
+                          loadData();
+                        }
+                      }}
+                      className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all border border-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -301,7 +523,7 @@ export default function Admin_Page() {
                     />
                     <div>
                       <h4 className="font-bold text-zinc-900">{member.name}</h4>
-                      <p className="text-xs text-indigo-600 font-bold uppercase tracking-widest">{member.role}</p>
+                      <p className="text-xs text-brand-600 font-bold uppercase tracking-widest">{member.role}</p>
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -339,24 +561,24 @@ export default function Admin_Page() {
         {activeTab === 'scanner' && (
           <div className="max-w-xl mx-auto">
              {!isScanning ? (
-               <div className="bg-slate-900 p-12 rounded-[3.5rem] border border-slate-800 text-center flex flex-col items-center shadow-2xl relative overflow-hidden">
+               <div className="bento-card bg-brand-950 p-12 rounded-[3.5rem] border border-brand-900 text-center flex flex-col items-center shadow-2xl relative overflow-hidden">
                   <div className="absolute top-6 left-6">
-                    <span className="text-[9px] font-black uppercase text-indigo-400 tracking-[0.3em]">Scanner Active</span>
+                    <span className="text-[9px] font-black uppercase text-brand-400 tracking-[0.3em]">Scanner Active</span>
                   </div>
-                  <div className="w-24 h-24 bg-white/5 text-indigo-400 rounded-[2rem] flex items-center justify-center mb-8 border border-white/10">
+                  <div className="w-24 h-24 bg-white/5 text-brand-400 rounded-[2rem] flex items-center justify-center mb-8 border border-white/10">
                     <Scan className="w-10 h-10" />
                   </div>
-                  <h3 className="text-2xl font-black mb-4 text-white italic tracking-tighter">Attendance Core</h3>
-                  <p className="text-slate-400 mb-10 leading-relaxed text-sm font-medium">
+                  <h3 className="text-2xl font-black mb-4 text-white italic tracking-tighter uppercase">Attendance Core</h3>
+                  <p className="text-brand-100/60 mb-10 leading-relaxed text-sm font-bold uppercase tracking-widest">
                     Point your camera at a student's digital ticket for instant validation & demographic logging.
                   </p>
                   <button 
                     onClick={() => setIsScanning(true)}
-                    className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black uppercase text-xs tracking-widest hover:bg-indigo-500 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-600/20"
+                    className="w-full py-5 bg-brand-600 text-white rounded-3xl font-black uppercase text-[10px] tracking-widest hover:bg-brand-500 transition-all flex items-center justify-center gap-3 shadow-xl shadow-brand-600/20"
                   >
                     <Camera className="w-5 h-5" /> Open Scanner
                   </button>
-                  <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-indigo-600/10 blur-3xl"></div>
+                  <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-brand-600/10 blur-3xl"></div>
                </div>
              ) : (
                <div className="space-y-8">
@@ -394,7 +616,7 @@ export default function Admin_Page() {
                             <CheckCircle className="w-10 h-10" />
                           </div>
                           <h3 className="text-2xl font-bold text-zinc-900 mb-2">Success!</h3>
-                          <p className="text-lg font-bold text-indigo-600 mb-4">{scanResult.registration.studentName}</p>
+                          <p className="text-lg font-bold text-brand-600 mb-4">{scanResult.registration.studentName}</p>
                           <p className="text-zinc-500 text-sm mb-10">Attendance marked for {scanResult.registration.rollNo}</p>
                         </>
                       ) : (
@@ -423,31 +645,141 @@ export default function Admin_Page() {
         )}
       </main>
 
-      {/* Add Event Modal Placeholder (Simple logic) */}
+      {/* Event Modal */}
       <AnimatePresence>
         {showAddEvent && (
           <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-             <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm" onClick={() => setShowAddEvent(false)} />
+             <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm" onClick={() => { setShowAddEvent(false); setEditingEvent(null); }} />
              <div className="relative bg-white w-full max-w-2xl rounded-[3.5rem] p-12 shadow-2xl">
-                <h2 className="text-3xl font-bold mb-8">Create New Event</h2>
-                {/* Simplified form for prototype */}
-                <div className="space-y-6">
-                   <input className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100" placeholder="Event Title" />
+                <h2 className="text-3xl font-bold mb-8">{editingEvent ? 'Edit Event' : 'Create New Event'}</h2>
+                <form className="space-y-6" onSubmit={handleEventSubmit}>
+                   <input 
+                    name="title" 
+                    defaultValue={editingEvent?.title}
+                    required 
+                    className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 placeholder:text-zinc-300" 
+                    placeholder="Event Title" 
+                   />
                    <div className="grid grid-cols-2 gap-4">
-                      <select className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100">
+                      <select 
+                        name="type" 
+                        defaultValue={editingEvent?.type || 'Seminar'}
+                        className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100"
+                      >
                         <option>Seminar</option>
                         <option>Fest</option>
                         <option>Workshop</option>
+                        <option>Field Trip</option>
                       </select>
-                      <input type="date" className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100" />
+                      <input 
+                        name="date" 
+                        type="date" 
+                        defaultValue={editingEvent?.date}
+                        required 
+                        className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100" 
+                      />
                    </div>
-                   <textarea className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 h-32" placeholder="Description"></textarea>
-                   <button className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-bold">Launch Event</button>
-                </div>
+                   <textarea 
+                    name="description" 
+                    defaultValue={editingEvent?.description}
+                    required 
+                    className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 h-32 placeholder:text-zinc-300" 
+                    placeholder="Description"
+                   ></textarea>
+                   <button type="submit" className="w-full py-5 bg-brand-600 text-white rounded-3xl font-bold uppercase tracking-widest text-xs hover:bg-brand-700 transition-all">
+                    {editingEvent ? 'Update Event' : 'Launch Event'}
+                   </button>
+                </form>
              </div>
           </div>
         )}
       </AnimatePresence>
+
+      {/* Achievement Modal */}
+      <AnimatePresence>
+        {showAchievementModal && (
+          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+             <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm" onClick={() => { setShowAchievementModal(false); setEditingAchievement(null); }} />
+             <div className="relative bg-white w-full max-w-2xl rounded-[3.5rem] p-12 shadow-2xl">
+                <h2 className="text-3xl font-bold mb-8">{editingAchievement ? 'Edit Achievement' : 'Add Achievement'}</h2>
+                <form className="space-y-6" onSubmit={handleAchievementSubmit}>
+                   <input 
+                    name="title" 
+                    defaultValue={editingAchievement?.title}
+                    required 
+                    className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 placeholder:text-zinc-300" 
+                    placeholder="Achievement Title" 
+                   />
+                   <input 
+                    name="date" 
+                    type="date" 
+                    defaultValue={editingAchievement?.date}
+                    required 
+                    className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100" 
+                   />
+                   <textarea 
+                    name="description" 
+                    defaultValue={editingAchievement?.description}
+                    required 
+                    className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 h-32 placeholder:text-zinc-300" 
+                    placeholder="Description"
+                   ></textarea>
+                   <button type="submit" className="w-full py-5 bg-brand-600 text-white rounded-3xl font-bold uppercase tracking-widest text-xs hover:bg-brand-700 transition-all">
+                    {editingAchievement ? 'Update Achievement' : 'Save Achievement'}
+                   </button>
+                </form>
+             </div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Gallery Modal */}
+      <AnimatePresence>
+        {showGalleryModal && (
+          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+             <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm" onClick={() => { setShowGalleryModal(false); setEditingGallery(null); }} />
+             <div className="relative bg-white w-full max-w-2xl rounded-[3.5rem] p-12 shadow-2xl">
+                <h2 className="text-3xl font-bold mb-8">{editingGallery ? 'Edit Gallery Item' : 'Add Gallery Image'}</h2>
+                <form className="space-y-6" onSubmit={handleGallerySubmit}>
+                   <input 
+                    name="title" 
+                    defaultValue={editingGallery?.title}
+                    required 
+                    className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 placeholder:text-zinc-300" 
+                    placeholder="Image Title" 
+                   />
+                   <div className="grid grid-cols-2 gap-4">
+                      <input 
+                        name="category" 
+                        defaultValue={editingGallery?.category || 'Events'}
+                        required
+                        className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100" 
+                        placeholder="Category (e.g. Events, Academic)"
+                      />
+                      <input 
+                        name="src" 
+                        defaultValue={editingGallery?.src}
+                        required 
+                        className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100" 
+                        placeholder="Image URL"
+                      />
+                   </div>
+                   <textarea 
+                    name="description" 
+                    defaultValue={editingGallery?.description}
+                    required 
+                    className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 h-32 placeholder:text-zinc-300" 
+                    placeholder="Description of the moment"
+                   ></textarea>
+                   <button type="submit" className="w-full py-5 bg-brand-600 text-white rounded-3xl font-bold uppercase tracking-widest text-xs hover:bg-brand-700 transition-all">
+                    {editingGallery ? 'Update Item' : 'Add to Gallery'}
+                   </button>
+                </form>
+             </div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Member Modal */}
       <AnimatePresence>
         {showMemberModal && (
@@ -469,7 +801,7 @@ export default function Admin_Page() {
                        name="name" 
                        defaultValue={editingMember?.name}
                        required
-                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-indigo-600 outline-none transition-all" 
+                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-brand-600 outline-none transition-all" 
                        placeholder="e.g. Sneha Sharma" 
                      />
                    </div>
@@ -479,7 +811,7 @@ export default function Admin_Page() {
                        name="role" 
                        defaultValue={editingMember?.role}
                        required
-                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-indigo-600 outline-none transition-all" 
+                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-brand-600 outline-none transition-all" 
                        placeholder="e.g. President" 
                      />
                    </div>
@@ -489,7 +821,7 @@ export default function Admin_Page() {
                        name="image" 
                        defaultValue={editingMember?.image}
                        required
-                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-indigo-600 outline-none transition-all" 
+                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-brand-600 outline-none transition-all" 
                        placeholder="https://..." 
                      />
                    </div>
@@ -498,13 +830,13 @@ export default function Admin_Page() {
                      <input 
                        name="linkedin" 
                        defaultValue={editingMember?.linkedin}
-                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-indigo-600 outline-none transition-all" 
+                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-brand-600 outline-none transition-all" 
                        placeholder="https://linkedin.com/..." 
                      />
                    </div>
                    <button 
                      type="submit"
-                     className="w-full py-5 bg-zinc-900 text-white rounded-3xl font-black uppercase text-xs tracking-widest hover:bg-indigo-600 transition-all shadow-xl"
+                     className="w-full py-5 bg-zinc-900 text-white rounded-3xl font-black uppercase text-xs tracking-widest hover:bg-brand-600 transition-all shadow-xl"
                    >
                      {editingMember ? 'Update Profile' : 'Add to Team'}
                    </button>

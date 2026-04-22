@@ -16,11 +16,11 @@ export default function Members_Page() {
       <div className="max-w-7xl mx-auto">
         <header className="mb-20 flex flex-col md:flex-row justify-between items-end gap-6">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-50 text-brand-600 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] mb-6 border border-brand-100">
               <Users className="w-3 h-3" /> Core Team
             </div>
             <h1 className="text-4xl md:text-7xl font-black text-slate-900 tracking-tighter leading-[0.9] italic uppercase">
-              The Minds <br /> Behind <span className="text-indigo-600">INFINITIUM</span>
+              The Minds <br /> Behind <span className="text-brand-600">INFINITIUM</span>
             </h1>
           </div>
           <p className="text-slate-500 font-medium max-w-xs text-sm leading-relaxed uppercase tracking-widest text-right">
@@ -52,22 +52,22 @@ export default function Members_Page() {
                       href={member.linkedin} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="w-10 h-10 bg-white/90 backdrop-blur-md text-indigo-600 rounded-xl flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all shadow-2xl shadow-indigo-600/10 border border-white/50"
+                      className="w-10 h-10 bg-white/90 backdrop-blur-md text-brand-600 rounded-xl flex items-center justify-center hover:bg-brand-600 hover:text-white transition-all shadow-2xl shadow-brand-600/10 border border-white/50"
                     >
                       <Linkedin className="w-5 h-5" />
                     </a>
                   )}
                 </div>
 
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-8">
-                   <button className="w-full py-3 bg-white/20 backdrop-blur-md text-white rounded-xl flex items-center justify-center gap-2 hover:bg-white hover:text-indigo-600 transition-all font-bold text-xs uppercase tracking-widest">
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-8">
+                   <button className="w-full py-3 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-xl flex items-center justify-center gap-2 hover:bg-brand-500 hover:text-brand-950 transition-all font-black text-[10px] uppercase tracking-widest shadow-2xl">
                      <Mail className="w-4 h-4" /> Message
                    </button>
                 </div>
               </div>
               <div className="px-2">
-                <h3 className="text-xl font-black text-slate-900 group-hover:text-indigo-600 transition-all uppercase tracking-tighter">{member.name}</h3>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{member.role}</p>
+                <h3 className="text-xl font-black text-slate-900 group-hover:text-brand-600 transition-all uppercase tracking-tighter italic">{member.name}</h3>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 tracking-widest">{member.role}</p>
               </div>
             </motion.div>
           ))}

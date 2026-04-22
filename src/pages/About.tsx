@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { 
   Target, Users, Lightbulb, GraduationCap, 
@@ -6,11 +6,13 @@ import {
   BookOpen, Edit3, Monitor, Calendar, Megaphone, DollarSign,
   TrendingUp, Award, UserPlus
 } from 'lucide-react';
+import { useApi } from '../hooks/useApi';
+import { Link } from 'react-router-dom';
 
 const SectionTitle = ({ children, subtitle }: { children: React.ReactNode, subtitle?: string }) => (
   <div className="mb-16">
-    <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase mb-4 italic">{children}</h2>
-    {subtitle && <p className="text-sm font-bold text-indigo-600 uppercase tracking-widest">{subtitle}</p>}
+    <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase mb-2 italic">{children}</h2>
+    {subtitle && <p className="text-sm font-bold text-brand-600 uppercase tracking-[0.3em] font-sans">{subtitle}</p>}
   </div>
 );
 
@@ -20,12 +22,12 @@ const Card = ({ icon: Icon, title, text, delay }: any) => (
     whileInView={{ opacity: 1, scale: 1 }}
     viewport={{ once: true }}
     transition={{ delay }}
-    className="p-8 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl hover:border-indigo-100 transition-all group"
+    className="p-8 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl hover:border-brand-100 transition-all group"
   >
-    <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+    <div className="w-14 h-14 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
       <Icon className="w-7 h-7" />
     </div>
-    <h3 className="text-xl font-black text-zinc-900 mb-3 tracking-tight uppercase">{title}</h3>
+    <h3 className="text-xl font-black text-zinc-900 mb-3 tracking-tight uppercase italic">{title}</h3>
     <p className="text-sm text-zinc-500 leading-relaxed font-medium">{text}</p>
   </motion.div>
 );
@@ -36,21 +38,21 @@ const DepartmentCard = ({ icon: Icon, title, aim, tasks, delay }: any) => (
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ delay }}
-    className="p-8 bg-slate-900 text-white rounded-[3rem] relative overflow-hidden"
+    className="p-8 bg-brand-950 text-white rounded-[3rem] relative overflow-hidden border border-brand-900"
   >
     <div className="absolute top-0 right-0 p-8 opacity-5">
-      <Icon className="w-32 h-32" />
+      <Icon className="w-32 h-32 text-brand-300" />
     </div>
     <div className="relative z-10">
-      <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center mb-6 border border-white/10 text-indigo-400">
+      <div className="w-12 h-12 bg-brand-500/10 backdrop-blur-md rounded-xl flex items-center justify-center mb-6 border border-brand-500/20 text-brand-400">
         <Icon className="w-6 h-6" />
       </div>
-      <h3 className="text-2xl font-black mb-4 tracking-tighter uppercase italic">{title} Department</h3>
-      <p className="text-xs text-indigo-300 font-bold uppercase tracking-widest mb-6">Aim: {aim}</p>
+      <h3 className="text-2xl font-black mb-4 tracking-tighter uppercase italic text-brand-300">{title} Department</h3>
+      <p className="text-[10px] text-brand-400 font-black uppercase tracking-[0.2em] mb-6">Aim: {aim}</p>
       <ul className="space-y-3">
         {tasks.map((task: string, i: number) => (
-          <li key={i} className="flex gap-3 text-sm text-slate-400 leading-snug">
-            <span className="text-indigo-500 font-bold">•</span> {task}
+          <li key={i} className="flex gap-3 text-sm text-brand-100/60 leading-snug font-medium">
+            <span className="text-brand-500 font-bold">•</span> {task}
           </li>
         ))}
       </ul>
@@ -58,7 +60,20 @@ const DepartmentCard = ({ icon: Icon, title, aim, tasks, delay }: any) => (
   </motion.div>
 );
 
+const ICON_MAP: any = {
+  Search, Handshake, Microscope, MessageSquare, BookOpen, Edit3, Monitor, Calendar, Megaphone, DollarSign
+};
+
 export default function About_Page() {
+  const { request } = useApi();
+  const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    request('/api/about').then(setData);
+  }, []);
+
+  if (!data) return null;
+
   return (
     <div className="py-24 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -68,14 +83,25 @@ export default function About_Page() {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-50 text-brand-600 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] mb-8 border border-brand-100">
               <Users className="w-3 h-3" /> About INFINITIUM
             </div>
             <h1 className="text-5xl md:text-8xl font-black text-slate-900 tracking-tighter leading-[0.85] italic uppercase mb-10">
-              IGNITING <br /> <span className="text-indigo-600">CURIOSITY</span> <br /> & FOSTERING <br /> EXCELLENCE
+              {data.hero.title.split(' & ').map((part: string, i: number) => (
+                <React.Fragment key={i}>
+                  {i > 0 && <br />}
+                  {part.includes('CURIOSITY') ? (
+                    <>IGNITING <br /> <span className="text-brand-600">CURIOSITY</span></>
+                  ) : part}
+                </React.Fragment>
+              ))}
+              {/* Fallback to original text if split logic is too simple */}
+              {data.hero.title === "IGNITING CURIOSITY & FOSTERING EXCELLENCE" ? (
+                <>IGNITING <br /> <span className="text-brand-600">CURIOSITY</span> <br /> & FOSTERING <br /> EXCELLENCE</>
+              ) : data.hero.title}
             </h1>
             <p className="text-lg text-slate-600 font-medium leading-relaxed max-w-xl">
-              INFINITIUM, the society of Atma Ram Sanatan Dharma College, is a dynamic platform for students pursuing physical sciences to explore, discover, and delve into the fascinating world of Science.
+              {data.hero.subtitle}
             </p>
           </motion.div>
           <motion.div
@@ -84,11 +110,11 @@ export default function About_Page() {
             className="aspect-square bg-slate-100 rounded-[4rem] overflow-hidden relative"
           >
             <img 
-              src="https://images.unsplash.com/photo-1507413245164-6160d8298b31?q=80&w=1000" 
+              src={data.hero.image} 
               className="w-full h-full object-cover grayscale brightness-75" 
               alt="Science Exploration"
             />
-            <div className="absolute inset-0 bg-indigo-600/20 mix-blend-multiply" />
+            <div className="absolute inset-0 bg-brand-600/20 mix-blend-multiply" />
           </motion.div>
         </div>
 
@@ -96,69 +122,41 @@ export default function About_Page() {
         <section className="mb-32">
           <SectionTitle subtitle="Vision for students">Objectives of INFINITIUM</SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card 
-              icon={Search} 
-              title="Promote Scientific Enquiry" 
-              text="Inspire students to think beyond the curriculum, encouraging them to ask questions and seek answers."
-              delay={0.1}
-            />
-            <Card 
-              icon={Handshake} 
-              title="Foster Collaboration" 
-              text="Providing a conducive environment for students to work together and learn from each other's strengths."
-              delay={0.2}
-            />
-            <Card 
-              icon={Microscope} 
-              title="Develop Research Skills" 
-              text="Support students in conducting experiments, collecting data, and preparing for future endeavors."
-              delay={0.3}
-            />
-            <Card 
-              icon={MessageSquare} 
-              title="Enhance Communication" 
-              text="Enabling members to articulate complex scientific concepts effectively through seminars and discussions."
-              delay={0.4}
-            />
+            {data.objectives.map((obj: any, i: number) => {
+              const icons = [Search, Handshake, Microscope, MessageSquare];
+              return (
+                <Card 
+                  key={obj.id}
+                  icon={icons[i] || Search} 
+                  title={obj.title} 
+                  text={obj.text}
+                  delay={0.1 * (i + 1)}
+                />
+              );
+            })}
           </div>
         </section>
 
         {/* Impacts Section */}
-        <section className="mb-32 p-12 md:p-20 bg-indigo-600 rounded-[4rem] text-white overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-[100px] -translate-y-1/2 translate-x-1/2" />
+        <section className="mb-32 p-12 md:p-20 bg-brand-950 rounded-[4rem] text-white overflow-hidden relative border border-brand-900">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/10 blur-[100px] -translate-y-1/2 translate-x-1/2" />
           <SectionTitle subtitle="Transforming Lives">Impacts on Students</SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
-            <div className="space-y-10">
-              <div className="flex gap-6">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0"><TrendingUp className="w-6 h-6" /></div>
-                <div>
-                  <h4 className="text-xl font-bold mb-2">Scientific Literacy</h4>
-                  <p className="text-indigo-100 text-sm leading-relaxed">Enhances understanding of scientific principles and their applications in real-world scenarios.</p>
-                </div>
-              </div>
-              <div className="flex gap-6">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0"><Handshake className="w-6 h-6" /></div>
-                <div>
-                  <h4 className="text-xl font-bold mb-2">Leadership & Collaboration</h4>
-                  <p className="text-indigo-100 text-sm leading-relaxed">Prepares students for leadership roles in communities, industries, and various work fields.</p>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-10">
-              <div className="flex gap-6">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0"><Award className="w-6 h-6" /></div>
-                <div>
-                  <h4 className="text-xl font-bold mb-2">Builds Confidence</h4>
-                  <p className="text-indigo-100 text-sm leading-relaxed">Empowers members to express their ideas, present research, and engage confidently in discussions.</p>
-                </div>
-              </div>
-              <div className="flex gap-6">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center shrink-0"><UserPlus className="w-6 h-6" /></div>
-                <div>
-                  <h4 className="text-xl font-bold mb-2">Skill Development</h4>
-                  <p className="text-indigo-100 text-sm leading-relaxed">Improves public speaking, event organization, and teamwork skills for career and personal growth.</p>
-                </div>
-              </div>
+            <div className="grid grid-cols-1 gap-12">
+               {data.impacts.map((imp: any, i: number) => {
+                 const icons = [TrendingUp, Handshake, Award, UserPlus];
+                 return (
+                  <div key={imp.id} className="flex gap-6">
+                    <div className="w-12 h-12 bg-white/5 border border-white/10 backdrop-blur-md rounded-xl flex items-center justify-center shrink-0 text-brand-400">
+                      {React.createElement(icons[i] || TrendingUp, { className: "w-6 h-6" })}
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-bold mb-2 uppercase italic tracking-tight">{imp.title}</h4>
+                      <p className="text-brand-100/60 text-sm leading-relaxed font-medium">{imp.text}</p>
+                    </div>
+                  </div>
+                 );
+               })}
             </div>
           </div>
         </section>
@@ -167,69 +165,40 @@ export default function About_Page() {
         <section className="mb-32">
           <SectionTitle subtitle="Our specialized wings">Departments</SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <DepartmentCard 
-              icon={BookOpen} 
-              title="Academic"
-              aim="Support students in their academic journey."
-              tasks={["Provide essential resources (notes, PYQs)", "Foster academic success", "Stay informed about college happenings"]}
-              delay={0.1}
-            />
-            <DepartmentCard 
-              icon={Edit3} 
-              title="Content"
-              aim="Provide high-quality engaging content."
-              tasks={["Craft captions for social media", "Create regular event reports", "Utilize original creativity in writing"]}
-              delay={0.2}
-            />
-            <DepartmentCard 
-              icon={Monitor} 
-              title="Digital"
-              aim="Bring creative ideas to online presence."
-              tasks={["Prepare posters and graphics", "Edit reels and audio content", "Monitor online engagement metrics"]}
-              delay={0.3}
-            />
-            <DepartmentCard 
-              icon={Calendar} 
-              title="Event"
-              aim="Plan, organize, and execute events."
-              tasks={["Coordinate with speakers and performers", "Manage logistics and venue", "Deliver successful society objectives"]}
-              delay={0.4}
-            />
-            <DepartmentCard 
-              icon={Megaphone} 
-              title="PR"
-              aim="Craft and share compelling stories."
-              tasks={["Develop communication strategies", "Maintain strong reputation", "Amplify society's voice and impact"]}
-              delay={0.5}
-            />
-            <DepartmentCard 
-              icon={Handshake} 
-              title="Sponsorship"
-              aim="Secure sponsorships and partnerships."
-              tasks={["Build relationships with partners", "Negotiate and finalize deals", "Track revenue and ROI"]}
-              delay={0.6}
-            />
+            {data.departments.map((dept: any, i: number) => {
+              const icons = [BookOpen, Edit3, Monitor, Calendar, Megaphone, Handshake];
+              return (
+                <DepartmentCard 
+                  key={dept.id}
+                  icon={icons[i] || BookOpen} 
+                  title={dept.title}
+                  aim={dept.aim}
+                  tasks={dept.tasks}
+                  delay={0.1 * (i + 1)}
+                />
+              );
+            })}
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="p-12 md:p-24 bg-slate-50 border border-slate-100 rounded-[4rem] text-center overflow-hidden relative">
+        <section className="p-12 md:p-24 bg-brand-50 border border-brand-100 rounded-[4rem] text-center overflow-hidden relative">
           <div className="absolute top-0 left-0 p-8">
-             <span className="text-[10px] font-black uppercase text-indigo-400 tracking-[0.4em]">Join the movement</span>
+             <span className="text-[10px] font-black uppercase text-brand-400 tracking-[0.4em]">Join the movement</span>
           </div>
           <h2 className="text-3xl md:text-5xl font-black mb-8 italic uppercase text-slate-900 tracking-tighter">
-            Unlock the wonders of <span className="text-indigo-600">Physical Sciences</span>
+            Unlock the wonders of <span className="text-brand-600">Physical Sciences</span>
           </h2>
-          <p className="text-slate-500 max-w-2xl mx-auto mb-10 font-medium">
+          <p className="text-slate-500 max-w-2xl mx-auto mb-10 font-medium leading-relaxed uppercase tracking-wide text-sm px-4">
             If you're a student at ARSD College with a thirst for knowledge and a passion for discovery, join INFINITIUM today! Together, let's shape a brighter future.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <button className="px-10 py-5 bg-indigo-600 text-white rounded-3xl font-black uppercase text-xs tracking-widest shadow-xl shadow-indigo-600/20 hover:bg-slate-900 transition-colors">
+            <button className="px-10 py-5 bg-brand-600 text-white rounded-3xl font-black uppercase text-xs tracking-widest shadow-xl shadow-brand-600/20 hover:bg-brand-950 transition-colors">
                Apply for Core Team
             </button>
-            <button className="px-10 py-5 bg-white border-2 border-slate-200 text-slate-900 rounded-3xl font-black uppercase text-xs tracking-widest hover:border-indigo-600 transition-colors">
+            <Link to="/events" className="px-10 py-5 bg-white border-2 border-brand-200 text-brand-800 rounded-3xl flex items-center justify-center font-black uppercase text-xs tracking-widest hover:border-brand-600 transition-all">
                Explore Events
-            </button>
+            </Link>
           </div>
         </section>
       </div>
