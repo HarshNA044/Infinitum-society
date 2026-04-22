@@ -1,0 +1,343 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  BarChart3, Plus, Scan, Users, Calendar, 
+  Trash2, CheckCircle, XCircle, ChevronLeft,
+  LayoutDashboard, ListOrdered, Camera
+} from 'lucide-react';
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
+  Tooltip, ResponsiveContainer, Cell, PieChart, Pie 
+} from 'recharts';
+import { Html5QrcodeScanner } from 'html5-qrcode';
+import { useApi } from '../hooks/useApi';
+import { cn } from '../lib/utils';
+
+export default function Admin_Page() {
+  const { request, loading } = useApi();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [events, setEvents] = useState([]);
+  const [stats, setStats] = useState({ totalRegistrations: 0, totalAttendance: 0, eventsCount: 0 });
+  const [showAddEvent, setShowAddEvent] = useState(false);
+  
+  // Scanner state
+  const [scanResult, setScanResult] = useState<any>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = () => {
+    request('/api/events').then(setEvents);
+    request('/api/stats').then(setStats);
+  };
+
+  useEffect(() => {
+    if (activeTab === 'scanner' && isScanning) {
+      scannerRef.current = new Html5QrcodeScanner(
+        "reader", 
+        { fps: 10, qrbox: { width: 250, height: 250 } }, 
+        false
+      );
+      
+      scannerRef.current.render(async (decodedText) => {
+        try {
+          const result = await request('/api/mark-attendance', {
+            method: 'POST',
+            body: JSON.stringify({ ticketId: decodedText })
+          });
+          setScanResult({ success: true, ...result });
+          loadData();
+        } catch (err: any) {
+          setScanResult({ success: false, error: err.message });
+        }
+        stopScanner();
+      }, (err) => {
+        // ignore errors
+      });
+    }
+
+    return () => stopScanner();
+  }, [activeTab, isScanning]);
+
+  const stopScanner = () => {
+    if (scannerRef.current) {
+      scannerRef.current.clear().catch(console.error);
+      scannerRef.current = null;
+    }
+  };
+
+  const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444'];
+
+  const chartData = events.map((e: any) => ({
+    name: e.title.split(':')[0],
+    registrations: e.stats.registrations,
+    attendance: e.stats.attendance,
+  }));
+
+  return (
+    <div className="min-h-screen bg-zinc-50 flex flex-col md:flex-row">
+      {/* Sidebar */}
+      <aside className="w-full md:w-64 bg-white border-r border-zinc-200 p-6 flex flex-col gap-8">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center text-white">
+            <LayoutDashboard className="w-4 h-4" />
+          </div>
+          <h2 className="font-bold text-lg">Admin View</h2>
+        </div>
+
+        <nav className="flex flex-col gap-2">
+          {[
+            { id: 'overview', icon: BarChart3, label: 'Overview' },
+            { id: 'events', icon: ListOrdered, label: 'Events List' },
+            { id: 'scanner', icon: Scan, label: 'QR Scanner' },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all",
+                activeTab === tab.id ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100" : "text-zinc-500 hover:bg-zinc-100"
+              )}
+            >
+              <tab.icon className="w-5 h-5" />
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+      </aside>
+
+      {/* Main Area */}
+      <main className="flex-1 p-6 md:p-12 overflow-y-auto">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+          <div>
+            <h1 className="text-3xl font-bold text-zinc-900 mb-2 capitalize">{activeTab} Panel</h1>
+            <p className="text-zinc-500 font-medium">Manage Infinitum's backend operations.</p>
+          </div>
+          {activeTab === 'events' && (
+            <button 
+              onClick={() => setShowAddEvent(true)}
+              className="flex items-center gap-2 px-6 py-3 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-indigo-600 transition-all shadow-xl"
+            >
+              <Plus className="w-5 h-5" /> Create Event
+            </button>
+          )}
+        </header>
+
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bento-card bg-white p-8">
+                <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] mb-2">Total Registrations</p>
+                <p className="text-4xl font-black text-slate-900 tracking-tighter">{stats.totalRegistrations}</p>
+                <div className="mt-4 h-1 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-indigo-600 w-3/4"></div>
+                </div>
+              </div>
+              <div className="bento-card bg-indigo-600 p-8 text-white border-none shadow-indigo-600/20">
+                <p className="text-indigo-200 font-bold text-[10px] uppercase tracking-[0.2em] mb-2">Total Attendance</p>
+                <p className="text-4xl font-black tracking-tighter">{stats.totalAttendance}</p>
+                <div className="mt-4 h-1 bg-white/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-white w-1/2"></div>
+                </div>
+              </div>
+              <div className="bento-card bg-amber-400 p-8 border-amber-500">
+                <p className="text-amber-900/60 font-bold text-[10px] uppercase tracking-[0.2em] mb-2">Completion Rate</p>
+                <p className="text-4xl font-black text-amber-950 tracking-tighter">
+                  {stats.totalRegistrations > 0 ? Math.round((stats.totalAttendance / stats.totalRegistrations) * 100) : 0}%
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+               <div className="bento-card h-[400px]">
+                 <h3 className="text-xs font-black uppercase text-slate-400 tracking-widest mb-8">Event Performance</h3>
+                 <ResponsiveContainer width="100%" height="100%">
+                   <BarChart data={chartData}>
+                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}} />
+                     <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}} />
+                     <Tooltip 
+                        contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px', fontWeight: 'bold'}}
+                     />
+                     <Bar dataKey="registrations" fill="#4f46e5" radius={[6, 6, 0, 0]} barSize={20} />
+                     <Bar dataKey="attendance" fill="#10b981" radius={[6, 6, 0, 0]} barSize={20} />
+                   </BarChart>
+                 </ResponsiveContainer>
+               </div>
+               
+               <div className="bento-card flex flex-col items-center justify-center text-center">
+                 <h3 className="text-xs font-black uppercase text-slate-400 tracking-widest mb-8 self-start">Event Distribution</h3>
+                 <div className="flex-1 flex items-center justify-center w-full">
+                    <PieChart width={280} height={280}>
+                      <Pie
+                        data={[
+                           { name: 'Seminars', value: events.filter((e: any) => e.type === 'Seminar').length },
+                           { name: 'Fests', value: events.filter((e: any) => e.type === 'Fest').length },
+                           { name: 'Workshops', value: events.filter((e: any) => e.type === 'Workshop').length },
+                        ]}
+                        cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={8} dataKey="value"
+                      >
+                        {events.map((_entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} cornerRadius={4} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                 </div>
+               </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'events' && (
+          <div className="bg-white rounded-[2rem] border border-zinc-100 shadow-sm overflow-hidden">
+             <table className="w-full text-left border-collapse">
+               <thead className="bg-zinc-50">
+                 <tr>
+                   <th className="px-8 py-5 text-sm font-bold text-zinc-500 tracking-wider">EVENT NAME</th>
+                   <th className="px-8 py-5 text-sm font-bold text-zinc-500 tracking-wider">TYPE</th>
+                   <th className="px-8 py-5 text-sm font-bold text-zinc-500 tracking-wider">REGS</th>
+                   <th className="px-8 py-5 text-sm font-bold text-zinc-500 tracking-wider">ATTND</th>
+                   <th className="px-8 py-5 text-sm font-bold text-zinc-500 tracking-wider text-right">ACTION</th>
+                 </tr>
+               </thead>
+               <tbody className="divide-y divide-zinc-100">
+                 {events.map((event: any) => (
+                   <tr key={event.id} className="hover:bg-zinc-50 transition-colors">
+                     <td className="px-8 py-6">
+                        <p className="font-bold text-zinc-900">{event.title}</p>
+                        <p className="text-sm text-zinc-400">{event.date}</p>
+                     </td>
+                     <td className="px-8 py-6">
+                        <span className="px-3 py-1 bg-zinc-100 text-zinc-600 rounded-full text-xs font-bold">{event.type}</span>
+                     </td>
+                     <td className="px-8 py-6 font-bold">{event.stats.registrations}</td>
+                     <td className="px-8 py-6 font-bold text-indigo-600">{event.stats.attendance}</td>
+                     <td className="px-8 py-6 text-right">
+                        <button className="p-2 hover:text-red-600 transition-colors"><Trash2 className="w-5 h-5" /></button>
+                     </td>
+                   </tr>
+                 ))}
+               </tbody>
+             </table>
+          </div>
+        )}
+
+        {activeTab === 'scanner' && (
+          <div className="max-w-xl mx-auto">
+             {!isScanning ? (
+               <div className="bg-slate-900 p-12 rounded-[3.5rem] border border-slate-800 text-center flex flex-col items-center shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-6 left-6">
+                    <span className="text-[9px] font-black uppercase text-indigo-400 tracking-[0.3em]">Scanner Active</span>
+                  </div>
+                  <div className="w-24 h-24 bg-white/5 text-indigo-400 rounded-[2rem] flex items-center justify-center mb-8 border border-white/10">
+                    <Scan className="w-10 h-10" />
+                  </div>
+                  <h3 className="text-2xl font-black mb-4 text-white italic tracking-tighter">Attendance Core</h3>
+                  <p className="text-slate-400 mb-10 leading-relaxed text-sm font-medium">
+                    Point your camera at a student's digital ticket for instant validation & demographic logging.
+                  </p>
+                  <button 
+                    onClick={() => setIsScanning(true)}
+                    className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black uppercase text-xs tracking-widest hover:bg-indigo-500 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-600/20"
+                  >
+                    <Camera className="w-5 h-5" /> Open Scanner
+                  </button>
+                  <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-indigo-600/10 blur-3xl"></div>
+               </div>
+             ) : (
+               <div className="space-y-8">
+                 <div className="bg-slate-900 rounded-[3.5rem] overflow-hidden border-4 border-indigo-600 shadow-2xl relative shadow-indigo-600/20">
+                    <div id="reader" className="w-full"></div>
+                    <button 
+                      onClick={() => setIsScanning(false)}
+                      className="absolute top-6 right-6 p-3 bg-white/10 backdrop-blur-md rounded-2xl hover:bg-white/20 transition-all text-white border border-white/20"
+                    >
+                      <XCircle className="w-6 h-6" />
+                    </button>
+                 </div>
+                 <p className="text-center text-slate-500 font-black uppercase text-[10px] tracking-widest">Protocol: Direct Visual Verification</p>
+               </div>
+             )}
+
+             {/* Scan Result Overlay */}
+             <AnimatePresence>
+               {scanResult && (
+                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                    <motion.div 
+                      className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm"
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      onClick={() => setScanResult(null)}
+                    />
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                      className="relative bg-white w-full max-w-sm rounded-[3rem] p-10 text-center shadow-2xl"
+                    >
+                      {scanResult.success ? (
+                        <>
+                          <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <CheckCircle className="w-10 h-10" />
+                          </div>
+                          <h3 className="text-2xl font-bold text-zinc-900 mb-2">Success!</h3>
+                          <p className="text-lg font-bold text-indigo-600 mb-4">{scanResult.registration.studentName}</p>
+                          <p className="text-zinc-500 text-sm mb-10">Attendance marked for {scanResult.registration.rollNo}</p>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <XCircle className="w-10 h-10" />
+                          </div>
+                          <h3 className="text-2xl font-bold text-zinc-900 mb-2">Scan Failed</h3>
+                          <p className="text-zinc-500 text-sm mb-10">{scanResult.error || 'Invalid or expired ticket.'}</p>
+                        </>
+                      )}
+                      <button 
+                        onClick={() => {
+                          setScanResult(null);
+                          setIsScanning(true); // Restart scanner
+                        }}
+                        className="w-full py-4 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-zinc-800 transition-all"
+                      >
+                        Scan Next
+                      </button>
+                    </motion.div>
+                 </div>
+               )}
+             </AnimatePresence>
+          </div>
+        )}
+      </main>
+
+      {/* Add Event Modal Placeholder (Simple logic) */}
+      <AnimatePresence>
+        {showAddEvent && (
+          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+             <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm" onClick={() => setShowAddEvent(false)} />
+             <div className="relative bg-white w-full max-w-2xl rounded-[3.5rem] p-12 shadow-2xl">
+                <h2 className="text-3xl font-bold mb-8">Create New Event</h2>
+                {/* Simplified form for prototype */}
+                <div className="space-y-6">
+                   <input className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100" placeholder="Event Title" />
+                   <div className="grid grid-cols-2 gap-4">
+                      <select className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100">
+                        <option>Seminar</option>
+                        <option>Fest</option>
+                        <option>Workshop</option>
+                      </select>
+                      <input type="date" className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100" />
+                   </div>
+                   <textarea className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 h-32" placeholder="Description"></textarea>
+                   <button className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-bold">Launch Event</button>
+                </div>
+             </div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
