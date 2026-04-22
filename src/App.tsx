@@ -27,12 +27,17 @@ const Navigation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-xl italic group-hover:rotate-12 transition-transform shadow-lg shadow-indigo-600/20">
-              I
+            <div className="relative w-12 h-12">
+               <img 
+                 src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1000" 
+                 alt="INFINITIUM Logo" 
+                 className="w-full h-full object-contain rounded-full shadow-lg shadow-indigo-600/20 group-hover:rotate-12 transition-transform"
+               />
+               <div className="absolute inset-0 rounded-full border-2 border-indigo-600/10 group-hover:border-indigo-600/30 transition-all"></div>
             </div>
             <div>
-              <h1 className="text-xl font-bold leading-none tracking-tight text-indigo-950 uppercase">INFINITIUM</h1>
-              <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest mt-1 hidden sm:block">Atma Ram Sanatan Dharma College, DU</p>
+              <h1 className="text-xl font-black leading-none tracking-tight text-indigo-950 uppercase italic">INFINITIUM</h1>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 hidden sm:block">Society of Physical Sciences, ARSD</p>
             </div>
           </Link>
 

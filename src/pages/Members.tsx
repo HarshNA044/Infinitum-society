@@ -37,31 +37,38 @@ export default function Members_Page() {
               transition={{ delay: idx * 0.1 }}
               className="group"
             >
-              <div className="relative overflow-hidden rounded-[2.5rem] bg-zinc-100 aspect-square mb-6 border border-zinc-100">
+              <div className="relative overflow-hidden rounded-[2.5rem] bg-zinc-100 aspect-square mb-6 border border-zinc-100 group">
                 <img 
                   src={member.image} 
                   alt={member.name} 
                   className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" 
                   referrerPolicy="no-referrer"
                 />
+                
+                {/* Always Visible LinkedIn Badge */}
+                <div className="absolute top-4 right-4 z-20">
+                  {member.linkedin && (
+                    <a 
+                      href={member.linkedin} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 bg-white/90 backdrop-blur-md text-indigo-600 rounded-xl flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all shadow-2xl shadow-indigo-600/10 border border-white/50"
+                    >
+                      <Linkedin className="w-5 h-5" />
+                    </a>
+                  )}
+                </div>
+
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-8">
-                   {member.linkedin && (
-                     <a 
-                       href={member.linkedin} 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       className="w-10 h-10 bg-white text-indigo-600 rounded-xl flex items-center justify-center hover:scale-110 transition-transform shadow-xl"
-                     >
-                       <Linkedin className="w-5 h-5" />
-                     </a>
-                   )}
-                   <button className="w-10 h-10 bg-white/20 backdrop-blur-md text-white rounded-xl flex items-center justify-center hover:bg-white hover:text-indigo-600 transition-all">
-                     <Mail className="w-5 h-5" />
+                   <button className="w-full py-3 bg-white/20 backdrop-blur-md text-white rounded-xl flex items-center justify-center gap-2 hover:bg-white hover:text-indigo-600 transition-all font-bold text-xs uppercase tracking-widest">
+                     <Mail className="w-4 h-4" /> Message
                    </button>
                 </div>
               </div>
-              <h3 className="text-xl font-black text-slate-900 group-hover:text-indigo-600 transition-all uppercase tracking-tighter">{member.name}</h3>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{member.role}</p>
+              <div className="px-2">
+                <h3 className="text-xl font-black text-slate-900 group-hover:text-indigo-600 transition-all uppercase tracking-tighter">{member.name}</h3>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{member.role}</p>
+              </div>
             </motion.div>
           ))}
         </div>
