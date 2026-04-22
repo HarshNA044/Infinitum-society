@@ -40,12 +40,12 @@ let events = [
 let registrations = [];
 let feedback = [];
 let members = [
-    { id: '1', name: 'Dr. Rajesh Kumar', role: 'Convenor', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop' },
-    { id: '2', name: 'Sneha Sharma', role: 'President', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop' },
-    { id: '3', name: 'Rahul Verma', role: 'General Secretary', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop' },
-    { id: '4', name: 'Ananya Gupta', role: 'Tech Lead', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop' },
-    { id: '5', name: 'Vikram Singh', role: 'Event Coordinator', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop' },
-    { id: '6', name: 'Priya Das', role: 'Marketing Head', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop' },
+    { id: '1', name: 'Dr. Rajesh Kumar', role: 'Convenor', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop', linkedin: 'https://linkedin.com/in/rajeshkumar' },
+    { id: '2', name: 'Sneha Sharma', role: 'President', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop', linkedin: 'https://linkedin.com/in/snehasharma' },
+    { id: '3', name: 'Rahul Verma', role: 'General Secretary', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop', linkedin: 'https://linkedin.com/in/rahulverma' },
+    { id: '4', name: 'Ananya Gupta', role: 'Tech Lead', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop', linkedin: 'https://linkedin.com/in/ananyagupta' },
+    { id: '5', name: 'Vikram Singh', role: 'Event Coordinator', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop', linkedin: 'https://linkedin.com/in/vikramsingh' },
+    { id: '6', name: 'Priya Das', role: 'Marketing Head', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop', linkedin: 'https://linkedin.com/in/priyadas' },
 ];
 
 let achievements = [
@@ -59,7 +59,7 @@ app.get('/api/events', (req, res) => res.json(events));
 
 app.post('/api/events', (req, res) => {
     const newEvent = { ...req.body, id: Date.now().toString(), stats: { registrations: 0, attendance: 0 } };
-    events.push(newEvent);
+    events.unshift(newEvent); // Add to beginning (most recent)
     res.json(newEvent);
 });
 
@@ -97,6 +97,30 @@ app.get('/api/stats', (req, res) => {
 });
 
 app.get('/api/members', (req, res) => res.json(members));
+
+app.post('/api/members', (req, res) => {
+  const newMember = { ...req.body, id: Date.now().toString() };
+  members.push(newMember);
+  res.json(newMember);
+});
+
+app.put('/api/members/:id', (req, res) => {
+  const { id } = req.params;
+  const index = members.findIndex(m => m.id === id);
+  if (index !== -1) {
+    members[index] = { ...members[index], ...req.body };
+    res.json(members[index]);
+  } else {
+    res.status(404).json({ error: 'Member not found' });
+  }
+});
+
+app.delete('/api/members/:id', (req, res) => {
+  const { id } = req.params;
+  members = members.filter(m => m.id !== id);
+  res.json({ success: true });
+});
+
 app.get('/api/achievements', (req, res) => res.json(achievements));
 
 app.post('/api/feedback', (req, res) => {

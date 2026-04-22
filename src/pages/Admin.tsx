@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   BarChart3, Plus, Scan, Users, Calendar, 
   Trash2, CheckCircle, XCircle, ChevronLeft,
-  LayoutDashboard, ListOrdered, Camera
+  LayoutDashboard, ListOrdered, Camera, Linkedin, Edit3
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, 
@@ -17,8 +17,11 @@ export default function Admin_Page() {
   const { request, loading } = useApi();
   const [activeTab, setActiveTab] = useState('overview');
   const [events, setEvents] = useState([]);
+  const [members, setMembers] = useState<any[]>([]);
   const [stats, setStats] = useState({ totalRegistrations: 0, totalAttendance: 0, eventsCount: 0 });
   const [showAddEvent, setShowAddEvent] = useState(false);
+  const [showMemberModal, setShowMemberModal] = useState(false);
+  const [editingMember, setEditingMember] = useState<any>(null);
   
   // Scanner state
   const [scanResult, setScanResult] = useState<any>(null);
@@ -32,6 +35,40 @@ export default function Admin_Page() {
   const loadData = () => {
     request('/api/events').then(setEvents);
     request('/api/stats').then(setStats);
+    request('/api/members').then(setMembers);
+  };
+
+  const handleMemberSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get('name'),
+      role: formData.get('role'),
+      image: formData.get('image'),
+      linkedin: formData.get('linkedin'),
+    };
+
+    if (editingMember) {
+      await request(`/api/members/${editingMember.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      });
+    } else {
+      await request('/api/members', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    }
+    setShowMemberModal(false);
+    setEditingMember(null);
+    loadData();
+  };
+
+  const deleteMember = async (id: string) => {
+    if (window.confirm('Delete this member?')) {
+      await request(`/api/members/${id}`, { method: 'DELETE' });
+      loadData();
+    }
   };
 
   useEffect(() => {
@@ -92,6 +129,7 @@ export default function Admin_Page() {
           {[
             { id: 'overview', icon: BarChart3, label: 'Overview' },
             { id: 'events', icon: ListOrdered, label: 'Events List' },
+            { id: 'members', icon: Users, label: 'Members' },
             { id: 'scanner', icon: Scan, label: 'QR Scanner' },
           ].map(tab => (
             <button
@@ -122,6 +160,17 @@ export default function Admin_Page() {
               className="flex items-center gap-2 px-6 py-3 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-indigo-600 transition-all shadow-xl"
             >
               <Plus className="w-5 h-5" /> Create Event
+            </button>
+          )}
+          {activeTab === 'members' && (
+            <button 
+              onClick={() => {
+                setEditingMember(null);
+                setShowMemberModal(true);
+              }}
+              className="flex items-center gap-2 px-6 py-3 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-indigo-600 transition-all shadow-xl"
+            >
+              <Plus className="w-5 h-5" /> Add Member
             </button>
           )}
         </header>
@@ -239,6 +288,54 @@ export default function Admin_Page() {
           </div>
         )}
 
+        {activeTab === 'members' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+             {members.map((member: any) => (
+               <div key={member.id} className="bg-white rounded-[2rem] p-6 border border-zinc-100 shadow-sm group">
+                  <div className="flex items-center gap-4 mb-6">
+                    <img 
+                      src={member.image} 
+                      alt={member.name} 
+                      className="w-16 h-16 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div>
+                      <h4 className="font-bold text-zinc-900">{member.name}</h4>
+                      <p className="text-xs text-indigo-600 font-bold uppercase tracking-widest">{member.role}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => {
+                        setEditingMember(member);
+                        setShowMemberModal(true);
+                      }}
+                      className="flex-1 py-2 bg-zinc-100 text-zinc-600 rounded-xl text-xs font-bold hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"
+                    >
+                      <Edit3 className="w-3 h-3" /> Edit
+                    </button>
+                    <button 
+                      onClick={() => deleteMember(member.id)}
+                      className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                    {member.linkedin && (
+                      <a 
+                        href={member.linkedin} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-all"
+                      >
+                        <Linkedin className="w-4 h-4" />
+                      </a>
+                    )}
+                  </div>
+               </div>
+             ))}
+          </div>
+        )}
+
         {activeTab === 'scanner' && (
           <div className="max-w-xl mx-auto">
              {!isScanning ? (
@@ -348,6 +445,71 @@ export default function Admin_Page() {
                    <button className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-bold">Launch Event</button>
                 </div>
              </div>
+          </div>
+        )}
+      </AnimatePresence>
+      {/* Member Modal */}
+      <AnimatePresence>
+        {showMemberModal && (
+          <div className="fixed inset-0 z-[160] flex items-center justify-center p-4">
+             <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm" onClick={() => setShowMemberModal(false)} />
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.9 }}
+               className="relative bg-white w-full max-w-lg rounded-[3.5rem] p-10 shadow-2xl"
+             >
+                <h2 className="text-3xl font-bold mb-8">
+                  {editingMember ? 'Edit Member' : 'Add New Member'}
+                </h2>
+                <form onSubmit={handleMemberSubmit} className="space-y-6">
+                   <div className="space-y-2">
+                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest pl-2">Full Name</label>
+                     <input 
+                       name="name" 
+                       defaultValue={editingMember?.name}
+                       required
+                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-indigo-600 outline-none transition-all" 
+                       placeholder="e.g. Sneha Sharma" 
+                     />
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest pl-2">Role</label>
+                     <input 
+                       name="role" 
+                       defaultValue={editingMember?.role}
+                       required
+                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-indigo-600 outline-none transition-all" 
+                       placeholder="e.g. President" 
+                     />
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest pl-2">Profile Image URL</label>
+                     <input 
+                       name="image" 
+                       defaultValue={editingMember?.image}
+                       required
+                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-indigo-600 outline-none transition-all" 
+                       placeholder="https://..." 
+                     />
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest pl-2">LinkedIn URL</label>
+                     <input 
+                       name="linkedin" 
+                       defaultValue={editingMember?.linkedin}
+                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-indigo-600 outline-none transition-all" 
+                       placeholder="https://linkedin.com/..." 
+                     />
+                   </div>
+                   <button 
+                     type="submit"
+                     className="w-full py-5 bg-zinc-900 text-white rounded-3xl font-black uppercase text-xs tracking-widest hover:bg-indigo-600 transition-all shadow-xl"
+                   >
+                     {editingMember ? 'Update Profile' : 'Add to Team'}
+                   </button>
+                </form>
+             </motion.div>
           </div>
         )}
       </AnimatePresence>
