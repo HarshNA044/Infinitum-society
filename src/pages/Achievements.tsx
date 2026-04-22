@@ -12,14 +12,23 @@ export default function Achievements_Page() {
   }, []);
 
   return (
-    <div className="py-24 px-4 min-h-screen bg-zinc-50">
-      <div className="max-w-4xl mx-auto">
-        <header className="text-center mb-24">
-          <h1 className="text-5xl font-bold tracking-tight mb-6">Our Success Stories</h1>
-          <p className="text-zinc-500 text-lg">A chronicle of our dedication and excellence over the years.</p>
+    <div className="py-24 px-4 min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto">
+        <header className="mb-24 flex flex-col md:flex-row justify-between items-end gap-6">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+              <Trophy className="w-3 h-3" /> Hall of Fame
+            </div>
+            <h1 className="text-4xl md:text-8xl font-black text-slate-900 tracking-tighter leading-[0.8] mb-8 italic uppercase">
+              Our Success <br /> <span className="text-indigo-600">Stories</span>
+            </h1>
+          </div>
+          <p className="text-slate-500 font-medium max-w-xs text-sm leading-relaxed uppercase tracking-widest text-right">
+            A chronicle of our dedication and excellence over the years.
+          </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {achievements.map((item: any, idx: number) => (
             <motion.div
               key={item.id}

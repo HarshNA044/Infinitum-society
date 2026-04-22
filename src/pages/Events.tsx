@@ -60,7 +60,7 @@ export default function Events_Page() {
     const doc = new jsPDF();
     doc.setFontSize(26);
     doc.setTextColor(79, 70, 229); // indigo-600
-    doc.text('INFINITUM SOCIETY', 20, 30);
+    doc.text('INFINITIUM SOCIETY', 20, 30);
     
     doc.setFontSize(18);
     doc.setTextColor(30, 41, 59);
@@ -90,10 +90,17 @@ export default function Events_Page() {
   return (
     <div className="py-20 px-4 min-h-screen bg-white">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-16 text-center max-w-2xl mx-auto">
-          <h1 className="text-5xl font-bold tracking-tight text-zinc-900 mb-6">Upcoming Events</h1>
-          <p className="text-zinc-500 text-lg">
-            Broaden your horizons with our meticulously planned seminars and vibrant fests.
+        <header className="mb-20 flex flex-col md:flex-row justify-between items-end gap-6">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+              <Calendar className="w-3 h-3" /> Schedule
+            </div>
+            <h1 className="text-4xl md:text-8xl font-black text-slate-900 tracking-tighter leading-[0.8] mb-8 italic uppercase">
+              Events & <br /> <span className="text-indigo-600">Archive</span>
+            </h1>
+          </div>
+          <p className="text-slate-500 font-medium max-w-xs text-sm leading-relaxed uppercase tracking-widest text-right">
+            Broaden your horizons with our planned seminars and vibrant fests.
           </p>
         </header>
 

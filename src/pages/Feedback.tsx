@@ -88,7 +88,7 @@ export default function Feedback_Page() {
         {/* Feedback Area */}
         <div>
            <h1 className="text-5xl font-bold tracking-tight mb-8">Share Your Thought</h1>
-           <p className="text-zinc-500 text-lg mb-12">Your feedback helps Infinitum grow better and serve the student community better.</p>
+           <p className="text-zinc-500 text-lg mb-12">Your feedback helps INFINITIUM grow better and serve the student community better.</p>
            
            {!submitted ? (
              <form onSubmit={handleSubmit} className="space-y-8 bg-zinc-50 p-10 rounded-[3rem] border border-zinc-100">

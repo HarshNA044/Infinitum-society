@@ -1,6 +1,6 @@
 {
-  "name": "Infinitum Society - ARSD College",
-  "description": "Official portal for Infinitum, the society of ARSD College, DU. Manage fests, events, seminars, QR-based attendance, and certificates.",
+  "name": "INFINITIUM Society - ARSD College",
+  "description": "Official portal for INFINITIUM, the society of Physical Sciences, ARSD College, DU. Manage fests, events, seminars, QR-based attendance, and certificates.",
   "requestFramePermissions": [
     "camera"
   ],

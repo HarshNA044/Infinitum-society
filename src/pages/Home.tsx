@@ -49,24 +49,20 @@ export default function Home_Page() {
           <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-700">
             <Zap className="w-64 h-64" />
           </div>
-          <span className="bg-white/20 text-[10px] font-bold uppercase tracking-widest py-1 px-3 rounded-full self-start mb-6 backdrop-blur-md">Featured Seminar</span>
-          <h2 className="text-4xl md:text-6xl font-black mb-6 leading-tight tracking-tighter">
-            {featuredEvent?.title || "Generative AI & The Future of DU"}
+          <span className="bg-white/20 text-[10px] font-black uppercase tracking-[0.3em] py-1.5 px-4 rounded-full self-start mb-8 backdrop-blur-md">Society of Physical Sciences</span>
+          <h2 className="text-5xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter uppercase italic">
+            INFINITIUM <br /> <span className="text-indigo-200">INSPIRING</span> <br /> INNOVATION
           </h2>
-          <div className="flex flex-wrap gap-8 items-center mt-2">
+          <div className="flex flex-wrap gap-8 items-center mt-4">
             <div className="flex flex-col">
-              <span className="text-[10px] text-indigo-200 uppercase font-bold tracking-widest mb-1">Date</span>
-              <span className="text-lg font-bold uppercase">{featuredEvent?.date || "TBA"}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] text-indigo-200 uppercase font-bold tracking-widest mb-1">Venue</span>
-              <span className="text-lg font-bold">{featuredEvent?.location || "Seminar Hall 1"}</span>
+              <span className="text-[10px] text-indigo-200 uppercase font-bold tracking-widest mb-1">Featured Event</span>
+              <span className="text-xl font-black uppercase italic tracking-tighter">{featuredEvent?.title || "EXPLOROMANIA"}</span>
             </div>
             <Link 
-              to={featuredEvent ? `/events?register=${featuredEvent.id}` : "/events"}
-              className="md:ml-auto bg-white text-indigo-700 px-8 py-4 rounded-2xl font-black uppercase text-sm hover:scale-105 transition-transform shadow-xl shadow-indigo-950/20 active:scale-95"
+              to="/events"
+              className="md:ml-auto bg-white text-indigo-700 px-10 py-5 rounded-3xl font-black uppercase text-xs tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-2xl shadow-indigo-950/20 active:scale-95"
             >
-              Register Now
+              Explore Events
             </Link>
           </div>
         </motion.div>
@@ -223,7 +219,7 @@ export default function Home_Page() {
         <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
           <div>
             <h3 className="text-3xl font-black italic tracking-tighter uppercase mb-2">Ongoing & Recent</h3>
-            <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">The latest from Infinitum society</p>
+            <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">The latest from INFINITIUM society</p>
           </div>
           <Link 
             to="/events" 
@@ -272,6 +268,38 @@ export default function Home_Page() {
           )}
         </div>
       </div>
+      <div className="mt-16 bg-slate-900 rounded-[3.5rem] p-12 md:p-24 text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/20 blur-[100px] -translate-y-1/2 translate-x-1/2" />
+        <div className="relative z-10 text-center max-w-3xl mx-auto">
+          <SectionHeader title="Recruitment Process" />
+          <h3 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase mb-10 leading-none">
+            Become a part of <span className="text-indigo-400">The Future</span>
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 text-left">
+            <div className="bg-white/5 border border-white/10 p-8 rounded-3xl backdrop-blur-md">
+              <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center mb-4 font-black">1</div>
+              <h4 className="text-xl font-bold mb-2">Google Forms</h4>
+              <p className="text-sm text-slate-400">Apply via our online form. Simple questions to know more about your passion and skills.</p>
+            </div>
+            <div className="bg-white/5 border border-white/10 p-8 rounded-3xl backdrop-blur-md">
+              <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center mb-4 font-black">2</div>
+              <h4 className="text-xl font-bold mb-2">Interview Round</h4>
+              <p className="text-sm text-slate-400">A personal interaction with our core team to understand your vision and fit within INFINITIUM.</p>
+            </div>
+          </div>
+          <button className="px-12 py-5 bg-white text-slate-900 rounded-2xl font-black uppercase text-sm tracking-widest hover:bg-indigo-400 hover:text-white transition-all">
+            Join INFINITIUM Today
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
+
+const SectionHeader = ({ title }: { title: string }) => (
+  <div className="flex items-center justify-center gap-4 mb-4">
+    <div className="h-px bg-slate-700 w-12 hidden md:block"></div>
+    <span className="text-[10px] font-black uppercase text-indigo-400 tracking-[0.5em]">{title}</span>
+    <div className="h-px bg-slate-700 w-12 hidden md:block"></div>
+  </div>
+);

@@ -152,7 +152,7 @@ export default function Admin_Page() {
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
           <div>
             <h1 className="text-3xl font-bold text-zinc-900 mb-2 capitalize">{activeTab} Panel</h1>
-            <p className="text-zinc-500 font-medium">Manage Infinitum's backend operations.</p>
+            <p className="text-zinc-500 font-medium">Manage INFINITIUM's backend operations.</p>
           </div>
           {activeTab === 'events' && (
             <button 

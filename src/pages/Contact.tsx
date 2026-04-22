@@ -10,7 +10,7 @@ export default function Contact_Page() {
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
             <h1 className="text-6xl font-bold tracking-tighter text-zinc-900 mb-8 leading-tight">Let's build <br /><span className="text-indigo-600">the future</span> together.</h1>
             <p className="text-xl text-zinc-500 mb-12 max-w-md leading-relaxed">
-              Have questions about Infinitum? Want to collaborate or sponsor our next big fest? Reach out to us.
+              Have questions about INFINITIUM? Want to collaborate or sponsor our next big event? Reach out to us.
             </p>
 
             <div className="space-y-10">
@@ -29,7 +29,7 @@ export default function Contact_Page() {
                 </div>
                 <div>
                    <h4 className="font-bold text-lg mb-1">Email Us</h4>
-                   <p className="text-zinc-500">infinitum@arsd.du.ac.in</p>
+                   <p className="text-zinc-500">infinitium@arsd.du.ac.in</p>
                 </div>
               </div>
             </div>

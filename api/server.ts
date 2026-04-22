@@ -7,45 +7,54 @@ app.use(express.json());
 let events = [
     {
       id: '1',
-      title: 'Annual Tech Fest: Pulsar 2026',
-      description: 'The flagship tech fest of ARSD College featuring coding, gaming, and workshops.',
-      date: '2026-05-15',
-      type: 'Fest',
-      status: 'Upcoming',
+      title: 'Exploromania: Motivational Seminar',
+      description: 'A seminar by Dr. Lajjaram Bishnoi (DGP of Meghalaya) on mental health and cracking civil services.',
+      date: '2024-02-10',
+      type: 'Seminar',
+      status: 'Past',
       location: 'Main Auditorium',
-      stats: { registrations: 345, attendance: 210 }
+      stats: { registrations: 450, attendance: 420 }
     },
     {
       id: '2',
-      title: 'AI Ethics Seminar',
-      description: 'A deep dive into the future of Artificial Intelligence and its ethical implications.',
-      date: '2026-04-28',
+      title: 'Beyond the Veil: Supernatural Science',
+      description: 'Exploring the science behind supernatural beliefs with Mr. Waqar Raj (Indian Paranormal Society).',
+      date: '2024-03-15',
       type: 'Seminar',
-      status: 'Upcoming',
+      status: 'Past',
       location: 'Seminar Hall 1',
-      stats: { registrations: 120, attendance: 88 }
+      stats: { registrations: 380, attendance: 350 }
     },
     {
       id: '3',
-      title: 'UI/UX Design Workshop',
-      description: 'Master the art of creating beautiful and functional user interfaces.',
-      date: '2026-06-02',
-      type: 'Workshop',
-      status: 'Upcoming',
-      location: 'Computer Lab 3',
-      stats: { registrations: 85, attendance: 0 }
+      title: 'Socio-Sync: Science Museum Visit',
+      description: 'Exploring the intertwined nature of Physics, Chemistry, Biology and Technology at National Science Museum.',
+      date: '2024-04-20',
+      type: 'Field Trip',
+      status: 'Past',
+      location: 'National Science Museum',
+      stats: { registrations: 120, attendance: 115 }
     }
 ];
 
 let registrations = [];
 let feedback = [];
 let members = [
-    { id: '1', name: 'Dr. Rajesh Kumar', role: 'Convenor', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop', linkedin: 'https://linkedin.com/in/rajeshkumar' },
-    { id: '2', name: 'Sneha Sharma', role: 'President', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop', linkedin: 'https://linkedin.com/in/snehasharma' },
-    { id: '3', name: 'Rahul Verma', role: 'General Secretary', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop', linkedin: 'https://linkedin.com/in/rahulverma' },
-    { id: '4', name: 'Ananya Gupta', role: 'Tech Lead', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop', linkedin: 'https://linkedin.com/in/ananyagupta' },
-    { id: '5', name: 'Vikram Singh', role: 'Event Coordinator', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop', linkedin: 'https://linkedin.com/in/vikramsingh' },
-    { id: '6', name: 'Priya Das', role: 'Marketing Head', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop', linkedin: 'https://linkedin.com/in/priyadas' },
+    { id: '1', name: 'Saksham Raj', role: 'President', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '2', name: 'Ritik', role: 'Vice-President', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '3', name: 'Vaishanvi Shukla', role: 'Vice-President', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '4', name: 'Sarthak Jiswal', role: 'Secretary', image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '5', name: 'Ayush Kumar Garg', role: 'Joint Secretary', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '6', name: 'Mritunjay Yadav', role: 'Academic Head', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '7', name: 'Divyansh Pratap Singh', role: 'Content Head', image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '8', name: 'Pragya Saxena', role: 'Content Sub-head', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '9', name: 'Atul Singh', role: 'Digital Head', image: 'https://images.unsplash.com/photo-1552058544-f2b08422138a?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '10', name: 'Nishant', role: 'Digital Sub-head', image: 'https://images.unsplash.com/photo-1493106819501-66d381c466f1?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '11', name: 'Niranjan Tripathi', role: 'Event Head', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '12', name: 'Raunak Kumar', role: 'Event Sub-head', image: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '13', name: 'Vikas Yadav', role: 'PR Head', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '14', name: 'Keshav Agrawal', role: 'PR Sub-head', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '15', name: 'Shrishti Singh', role: 'Sponsorship Head', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop', linkedin: '#' },
 ];
 
 let achievements = [

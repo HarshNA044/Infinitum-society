@@ -20,7 +20,7 @@ export default function Members_Page() {
               <Users className="w-3 h-3" /> Core Team
             </div>
             <h1 className="text-4xl md:text-7xl font-black text-slate-900 tracking-tighter leading-[0.9] italic uppercase">
-              The Minds <br /> Behind <span className="text-indigo-600">Infinitum</span>
+              The Minds <br /> Behind <span className="text-indigo-600">INFINITIUM</span>
             </h1>
           </div>
           <p className="text-slate-500 font-medium max-w-xs text-sm leading-relaxed uppercase tracking-widest text-right">

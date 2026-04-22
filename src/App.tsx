@@ -31,7 +31,7 @@ const Navigation = () => {
               I
             </div>
             <div>
-              <h1 className="text-xl font-bold leading-none tracking-tight text-indigo-950 uppercase">Infinitum</h1>
+              <h1 className="text-xl font-bold leading-none tracking-tight text-indigo-950 uppercase">INFINITIUM</h1>
               <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest mt-1 hidden sm:block">Atma Ram Sanatan Dharma College, DU</p>
             </div>
           </Link>
@@ -114,7 +114,7 @@ const Footer = () => (
   <footer className="mt-12 bg-white border-t border-slate-200 py-8">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center">
-        <p>© 2026 Infinitum Society • ARSD College, University of Delhi</p>
+        <p>© 2026 INFINITIUM Society • ARSD College, University of Delhi</p>
         <div className="flex gap-6">
           <Link to="/about" className="hover:text-indigo-600">About</Link>
           <Link to="/achievements" className="hover:text-indigo-600">Achievements</Link>
