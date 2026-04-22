@@ -34,7 +34,12 @@ export default function Gallery_Page() {
                 idx % 4 === 1 ? "md:col-span-2" : ""
               )}
             >
-              <img src={src} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Gallery item" />
+              <img 
+  src={src} 
+  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+  alt="Gallery item" 
+  referrerPolicy="no-referrer"
+/>
               <div className="absolute inset-0 bg-indigo-600/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-indigo-600 scale-50 group-hover:scale-100 transition-transform shadow-xl">
                    <ZoomIn className="w-6 h-6" />

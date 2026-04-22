@@ -127,9 +127,15 @@ export default function Home_Page() {
             <Link to="/gallery" className="text-indigo-600 hover:underline">View All</Link>
           </h3>
           <div className="grid grid-cols-2 gap-3 flex-1">
-            <div className="bg-slate-200 rounded-2xl bg-center bg-cover h-full" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1540575861501-7ce0e1d1aa99?q=80&w=400')" }}></div>
-            <div className="bg-slate-200 rounded-2xl bg-center bg-cover h-full" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=400')" }}></div>
-            <div className="bg-slate-200 rounded-2xl bg-center bg-cover h-full" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1523580494863-6f30312248f5?q=80&w=400')" }}></div>
+            <div className="bg-slate-200 rounded-2xl h-full overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1540575861501-7ce0e1d1aa99?q=80&w=400" className="w-full h-full object-cover" referrerPolicy="no-referrer" alt="Preview 1" />
+            </div>
+            <div className="bg-slate-200 rounded-2xl h-full overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=400" className="w-full h-full object-cover" referrerPolicy="no-referrer" alt="Preview 2" />
+            </div>
+            <div className="bg-slate-200 rounded-2xl h-full overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1523580494863-6f30312248f5?q=80&w=400" className="w-full h-full object-cover" referrerPolicy="no-referrer" alt="Preview 3" />
+            </div>
             <div className="bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400 font-black text-xl">+12</div>
           </div>
         </motion.div>

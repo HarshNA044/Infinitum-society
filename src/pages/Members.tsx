@@ -30,7 +30,12 @@ export default function Members_Page() {
             >
               <div className="relative mb-6">
                 <div className="w-32 h-32 overflow-hidden rounded-2xl border-2 border-slate-100 group-hover:border-indigo-600 transition-all shadow-xl">
-                  <img src={member.image} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <img 
+  src={member.image} 
+  alt={member.name} 
+  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+  referrerPolicy="no-referrer"
+/>
                 </div>
               </div>
               <h3 className="text-lg font-black text-slate-900 group-hover:text-indigo-600 transition-all uppercase tracking-tighter">{member.name}</h3>
