@@ -3,7 +3,7 @@ import express from 'express';
 const app = express();
 app.use(express.json());
 
-// In-memory "database" (for demo/prototype)
+// In-memory "database" (Synced with root server.ts)
 let events = [
     {
       id: '1',
@@ -64,45 +64,141 @@ let achievements = [
     { id: '4', title: 'Community Outreach', date: '2025-11-05', description: 'Successfully trained 200+ school students in basic web development.' }
 ];
 
+let aboutData = {
+  hero: {
+    title: "IGNITING CURIOSITY & FOSTERING EXCELLENCE",
+    subtitle: "INFINITIUM, the society of Atma Ram Sanatan Dharma College, is a dynamic platform for students pursuing physical sciences to explore, discover, and delve into the fascinating world of Science.",
+    image: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?q=80&w=1000"
+  },
+  objectives: [
+    { id: '1', title: 'Promote Scientific Enquiry', text: 'Inspire students to think beyond the curriculum, encouraging them to ask questions and seek answers.' },
+    { id: '2', title: 'Foster Collaboration', text: 'Providing a conducive environment for students to work together and learn from each other\'s strengths.' },
+    { id: '3', title: 'Develop Research Skills', text: 'Support students in conducting experiments, collecting data, and preparing for future endeavors.' },
+    { id: '4', title: 'Enhance Communication', text: 'Enabling members to articulate complex scientific concepts effectively through seminars and discussions.' }
+  ],
+  impacts: [
+    { id: '1', title: 'Scientific Literacy', text: 'Enhances understanding of scientific principles and their applications in real-world scenarios.' },
+    { id: '2', title: 'Leadership & Collaboration', text: 'Prepares students for leadership roles in communities, industries, and various work fields.' },
+    { id: '3', title: 'Builds Confidence', text: 'Empowers members to express their ideas, present research, and engage confidently in discussions.' },
+    { id: '4', title: 'Skill Development', text: 'Improves public speaking, event organization, and teamwork skills for career and personal growth.' }
+  ],
+  departments: [
+    { id: '1', title: 'Academic', aim: 'Support students in their academic journey.', tasks: ["Provide essential resources (notes, PYQs)", "Foster academic success", "Stay informed about college happenings"] },
+    { id: '2', title: 'Content', aim: 'Provide high-quality engaging content.', tasks: ["Craft captions for social media", "Create regular event reports", "Utilize original creativity in writing"] },
+    { id: '3', title: 'Digital', aim: 'Bring creative ideas to online presence.', tasks: ["Prepare posters and graphics", "Edit reels and audio content", "Monitor online engagement metrics"] },
+    { id: '4', title: 'Event', aim: 'Plan, organize, and execute events.', tasks: ["Coordinate with speakers and performers", "Manage logistics and venue", "Deliver successful society objectives"] },
+    { id: '5', title: 'PR', aim: 'Craft and share compelling stories.', tasks: ["Develop communication strategies", "Maintain strong reputation", "Amplify society's voice and impact"] },
+    { id: '6', title: 'Sponsorship', aim: 'Secure sponsorships and partnerships.', tasks: ["Build relationships with partners", "Negotiate and finalize deals", "Track revenue and ROI"] }
+  ]
+};
+
+let galleryItems = [
+  { id: '1', src: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&q=80', title: 'Science Workshop', description: 'Hands-on training session on experimental physics.', category: 'Academic' },
+  { id: '2', src: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&q=80', title: 'Exploromania Seminar', description: 'Motivational talk by industry experts.', category: 'Events' },
+  { id: '3', src: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=1200&q=80', title: 'Beyond the Veil', description: 'Exploring the science of the unknown.', category: 'Events' },
+  { id: '4', src: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1200&q=80', title: 'Socio-Sync Meetup', description: 'Networking event for science enthusiasts.', category: 'Social' },
+  { id: '5', src: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1200&q=80', title: 'Team Collaboration', description: 'Core team planning session for the annual fest.', category: 'Academic' },
+  { id: '6', src: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&q=80', title: 'Science Museum Visit', description: 'Educational tour of the National Science Centre.', category: 'Field Trip' },
+];
+
+let contactData = {
+  location: "Atma Ram Sanatan Dharma College, Dhuala Kuan, New Delhi, Delhi 110021",
+  email: "infinitium@arsd.du.ac.in",
+  phone: "+91 99999 88888",
+  mapLink: "https://maps.app.goo.gl/..."
+};
+
+// API Routes
 app.get('/api/events', (req, res) => res.json(events));
 
 app.post('/api/events', (req, res) => {
-    const newEvent = { ...req.body, id: Date.now().toString(), stats: { registrations: 0, attendance: 0 } };
-    events.unshift(newEvent); // Add to beginning (most recent)
-    res.json(newEvent);
+  const newEvent = { ...req.body, id: Date.now().toString(), stats: { registrations: 0, attendance: 0 } };
+  events.unshift(newEvent);
+  res.json(newEvent);
+});
+
+app.put('/api/events/:id', (req, res) => {
+  const { id } = req.params;
+  const index = events.findIndex(e => e.id === id);
+  if (index !== -1) {
+    events[index] = { ...events[index], ...req.body };
+    res.json(events[index]);
+  } else {
+    res.status(404).json({ error: 'Event not found' });
+  }
+});
+
+app.delete('/api/events/:id', (req, res) => {
+  events = events.filter(e => e.id !== req.params.id);
+  res.json({ success: true });
+});
+
+app.get('/api/about', (req, res) => res.json(aboutData));
+app.put('/api/about', (req, res) => {
+  aboutData = { ...aboutData, ...req.body };
+  res.json(aboutData);
+});
+
+app.get('/api/gallery', (req, res) => res.json(galleryItems));
+app.post('/api/gallery', (req, res) => {
+  const newItem = { ...req.body, id: Date.now().toString() };
+  galleryItems.unshift(newItem);
+  res.json(newItem);
+});
+
+app.put('/api/gallery/:id', (req, res) => {
+  const { id } = req.params;
+  const index = galleryItems.findIndex(item => item.id === id);
+  if (index !== -1) {
+    galleryItems[index] = { ...galleryItems[index], ...req.body };
+    res.json(galleryItems[index]);
+  } else {
+    res.status(404).json({ error: 'Gallery item not found' });
+  }
+});
+
+app.delete('/api/gallery/:id', (req, res) => {
+  galleryItems = galleryItems.filter(item => item.id !== req.params.id);
+  res.json({ success: true });
+});
+
+app.get('/api/contact', (req, res) => res.json(contactData));
+app.put('/api/contact', (req, res) => {
+  contactData = { ...contactData, ...req.body };
+  res.json(contactData);
 });
 
 app.post('/api/register', (req, res) => {
-    const { eventId, studentName, rollNo, email } = req.body;
-    const ticketId = `INF-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-    const registration = { eventId, studentName, rollNo, email, ticketId, attended: false, timestamp: new Date() };
-    registrations.push(registration);
-    
-    // Update event stats
-    const event = events.find(e => e.id === eventId);
-    if (event) event.stats.registrations++;
-    
-    res.json(registration);
+  const { eventId, studentName, rollNo, email } = req.body;
+  const ticketId = `INF-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+  const registration = { eventId, studentName, rollNo, email, ticketId, attended: false, timestamp: new Date() };
+  registrations.push(registration);
+  
+  // Update event stats
+  const event = events.find(e => e.id === eventId);
+  if (event) event.stats.registrations++;
+  
+  res.json(registration);
 });
 
 app.post('/api/mark-attendance', (req, res) => {
-    const { ticketId } = req.body;
-    const registration = registrations.find(r => r.ticketId === ticketId);
-    if (!registration) return res.status(404).json({ error: 'Invalid Ticket' });
-    
-    if (registration.attended) return res.json({ message: 'Already marked', registration });
-    
-    registration.attended = true;
-    const event = events.find(e => e.id === registration.eventId);
-    if (event) event.stats.attendance++;
-    
-    res.json({ message: 'Attendance marked successfully', registration });
+  const { ticketId } = req.body;
+  const registration = registrations.find(r => r.ticketId === ticketId);
+  if (!registration) return res.status(404).json({ error: 'Invalid Ticket' });
+  
+  if (registration.attended) return res.json({ message: 'Already marked', registration });
+  
+  registration.attended = true;
+  const event = events.find(e => e.id === registration.eventId);
+  if (event) event.stats.attendance++;
+  
+  res.json({ message: 'Attendance marked successfully', registration });
 });
 
 app.get('/api/stats', (req, res) => {
-    const totalRegistrations = registrations.length;
-    const totalAttendance = registrations.filter(r => r.attended).length;
-    res.json({ totalRegistrations, totalAttendance, eventsCount: events.length });
+  const totalRegistrations = registrations.length;
+  const totalAttendance = registrations.filter(r => r.attended).length;
+  res.json({ totalRegistrations, totalAttendance, eventsCount: events.length });
 });
 
 app.get('/api/members', (req, res) => res.json(members));
@@ -132,9 +228,31 @@ app.delete('/api/members/:id', (req, res) => {
 
 app.get('/api/achievements', (req, res) => res.json(achievements));
 
+app.post('/api/achievements', (req, res) => {
+  const newItem = { ...req.body, id: Date.now().toString() };
+  achievements.unshift(newItem);
+  res.json(newItem);
+});
+
+app.put('/api/achievements/:id', (req, res) => {
+  const { id } = req.params;
+  const index = achievements.findIndex(a => a.id === id);
+  if (index !== -1) {
+    achievements[index] = { ...achievements[index], ...req.body };
+    res.json(achievements[index]);
+  } else {
+    res.status(404).json({ error: 'Achievement not found' });
+  }
+});
+
+app.delete('/api/achievements/:id', (req, res) => {
+  achievements = achievements.filter(a => a.id !== req.params.id);
+  res.json({ success: true });
+});
+
 app.post('/api/feedback', (req, res) => {
-    feedback.push({ ...req.body, id: Date.now(), date: new Date() });
-    res.json({ success: true });
+  feedback.push({ ...req.body, id: Date.now(), date: new Date() });
+  res.json({ success: true });
 });
 
 export default app;
