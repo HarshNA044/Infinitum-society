@@ -38,7 +38,7 @@ export default function Home_Page() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 auto-rows-[120px] md:auto-rows-[100px]">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:auto-rows-[minmax(80px,_auto)]">
         
         {/* Main Hero / Featured Event (Span 8x4) */}
         <motion.div 
@@ -191,28 +191,28 @@ export default function Home_Page() {
           </div>
         </motion.div>
 
-        {/* QR Check-in System (Span 4x4) */}
+        {/* Featured Achievements (Span 4x4) */}
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
-          className="md:col-span-4 md:row-span-4 bg-slate-900 rounded-[2.5rem] p-8 text-white flex flex-col items-center justify-center text-center relative overflow-hidden"
+          className="md:col-span-4 md:row-span-4 bg-slate-900 rounded-[2.5rem] p-8 text-white flex flex-col justify-between relative overflow-hidden"
         >
           <div className="absolute top-6 left-6">
-             <span className="text-[9px] font-black uppercase text-indigo-400 tracking-[0.3em]">Scanner Core v2.0</span>
+             <span className="text-[9px] font-black uppercase text-indigo-400 tracking-[0.3em]">Our Legacy</span>
           </div>
-          <div className="w-36 h-36 border-4 border-dashed border-slate-700 rounded-3xl mb-8 flex items-center justify-center group cursor-pointer hover:border-indigo-500 transition-colors">
-            <div className="w-24 h-24 bg-white p-3 rounded-2xl shadow-2xl group-hover:scale-110 transition-transform">
-              <QrIcon className="w-full h-full text-slate-900" />
-            </div>
+          <div className="mt-8">
+            <Trophy className="w-16 h-16 text-amber-500 mb-6" />
+            <h4 className="text-2xl font-black mb-2 italic tracking-tighter uppercase">Recent Win</h4>
+            <p className="text-xs text-slate-400 mb-8 leading-relaxed uppercase font-bold tracking-widest">
+              Best Society Award 2025 • University of Delhi Technical Council
+            </p>
           </div>
-          <h4 className="text-xl font-black mb-2 italic tracking-tighter">Infinitum ID</h4>
-          <p className="text-xs text-slate-400 mb-8 leading-relaxed px-4">Instant attendance marking & digital certificate validation via blockchain-inspired protocol.</p>
           <Link 
-            to="/admin"
-            className="w-full bg-indigo-600 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-indigo-600/30 hover:bg-indigo-500 transition-colors active:scale-95"
+            to="/achievements"
+            className="w-full bg-indigo-600 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-indigo-600/30 hover:bg-indigo-500 transition-colors active:scale-95 text-center"
           >
-            Launch Scanner
+            Explore Success
           </Link>
           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-indigo-600/10 blur-3xl"></div>
         </motion.div>

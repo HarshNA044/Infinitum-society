@@ -151,9 +151,21 @@ export default function Admin_Page() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-               <div className="bento-card h-[400px]">
-                 <h3 className="text-xs font-black uppercase text-slate-400 tracking-widest mb-8">Event Performance</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+               <div className="bento-card lg:col-span-2 h-[400px]">
+                 <div className="flex justify-between items-center mb-8">
+                   <h3 className="text-xs font-black uppercase text-slate-400 tracking-widest">Event Performance</h3>
+                   <div className="flex gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase">Regs</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase">Attnd</span>
+                      </div>
+                   </div>
+                 </div>
                  <ResponsiveContainer width="100%" height="100%">
                    <BarChart data={chartData}>
                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -168,25 +180,26 @@ export default function Admin_Page() {
                  </ResponsiveContainer>
                </div>
                
-               <div className="bento-card flex flex-col items-center justify-center text-center">
-                 <h3 className="text-xs font-black uppercase text-slate-400 tracking-widest mb-8 self-start">Event Distribution</h3>
-                 <div className="flex-1 flex items-center justify-center w-full">
-                    <PieChart width={280} height={280}>
-                      <Pie
-                        data={[
-                           { name: 'Seminars', value: events.filter((e: any) => e.type === 'Seminar').length },
-                           { name: 'Fests', value: events.filter((e: any) => e.type === 'Fest').length },
-                           { name: 'Workshops', value: events.filter((e: any) => e.type === 'Workshop').length },
-                        ]}
-                        cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={8} dataKey="value"
-                      >
-                        {events.map((_entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} cornerRadius={4} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
+               <div className="bento-card bg-slate-900 border-none text-white">
+                 <h3 className="text-xs font-black uppercase text-indigo-400 tracking-widest mb-8">Recent Activity</h3>
+                 <div className="space-y-6">
+                    {[
+                      { user: "Aryan S.", action: "Registered", time: "2m ago", event: "Pulsar 2026" },
+                      { user: "Ishita M.", action: "Attended", time: "15m ago", event: "AI Seminar" },
+                      { user: "Kabir R.", action: "Registered", time: "1h ago", event: "UI Workshop" },
+                      { user: "Mehak P.", action: "Feedback", time: "2h ago", event: "Pulsar 2026" },
+                    ].map((item, i) => (
+                      <div key={i} className="flex gap-4 items-start border-l-2 border-white/10 pl-4 py-1">
+                        <div className="flex-1">
+                          <p className="text-xs font-bold"><span className="text-indigo-400">{item.user}</span> {item.action}</p>
+                          <p className="text-[10px] text-white/40 uppercase font-black tracking-widest mt-1">{item.event} • {item.time}</p>
+                        </div>
+                      </div>
+                    ))}
                  </div>
+                 <button className="mt-auto w-full py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">
+                    View Full Audit Log
+                 </button>
                </div>
             </div>
           </div>
