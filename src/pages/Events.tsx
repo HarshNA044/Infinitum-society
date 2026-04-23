@@ -128,33 +128,46 @@ export default function Events_Page() {
             <motion.div
               layout
               key={event.id}
-              className="bento-card group"
+              className="bento-card group flex flex-col p-0 overflow-hidden"
             >
-              <div className="mb-6 flex justify-between items-start">
-                <div className="bg-brand-50 w-12 h-12 rounded-2xl flex items-center justify-center text-brand-600 shadow-sm border border-brand-100 group-hover:scale-110 transition-transform">
-                  <Calendar className="w-6 h-6" />
+              <div className="aspect-[16/9] w-full relative overflow-hidden bg-slate-100">
+                <img 
+                  src={event.image} 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                  alt={event.title}
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[9px] font-black uppercase text-slate-900 tracking-widest border border-white/20">
+                  {event.date}
                 </div>
-                <span className="text-[10px] bento-tag bg-slate-100 text-slate-500 font-black">{event.date}</span>
               </div>
-              <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tighter uppercase leading-tight group-hover:text-brand-600 transition-colors italic">{event.title}</h3>
-              <p className="text-xs text-slate-500 mb-8 leading-relaxed line-clamp-3 font-medium">
-                {event.description}
-              </p>
-              
-              <div className="flex items-center gap-2 text-slate-400 mb-8 text-[10px] font-bold uppercase tracking-widest">
-                <MapPin className="w-3 h-3 text-brand-600" />
-                {event.location}
-              </div>
+              <div className="p-8 flex flex-col flex-1">
+                <div className="mb-6 flex justify-between items-start">
+                  <div className="bg-brand-50 w-12 h-12 rounded-2xl flex items-center justify-center text-brand-600 shadow-sm border border-brand-100 group-hover:scale-110 transition-transform">
+                    <Calendar className="w-6 h-6" />
+                  </div>
+                  <span className="text-[9px] bento-tag bg-brand-950 text-brand-300 font-black uppercase tracking-widest">{event.type}</span>
+                </div>
+                <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tighter uppercase leading-tight group-hover:text-brand-600 transition-colors italic">{event.title}</h3>
+                <p className="text-xs text-slate-500 mb-8 leading-relaxed line-clamp-3 font-medium flex-1">
+                  {event.description}
+                </p>
+                
+                <div className="flex items-center gap-2 text-slate-400 mb-8 text-[10px] font-bold uppercase tracking-widest">
+                  <MapPin className="w-3 h-3 text-brand-600" />
+                  {event.location}
+                </div>
 
-              <button
-                onClick={() => {
-                  setSelectedEvent(event);
-                  setIsRegistering(true);
-                }}
-                className="w-full py-4 bg-brand-950 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-brand-600 transition-all flex items-center justify-center gap-2 group-hover:shadow-lg group-hover:shadow-brand-600/20 active:scale-95 border border-brand-900"
-              >
-                Get Ticket <ArrowRight className="w-4 h-4" />
-              </button>
+                <button
+                  onClick={() => {
+                    setSelectedEvent(event);
+                    setIsRegistering(true);
+                  }}
+                  className="w-full py-4 bg-brand-950 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-brand-600 transition-all flex items-center justify-center gap-2 group-hover:shadow-lg group-hover:shadow-brand-600/20 active:scale-95 border border-brand-900"
+                >
+                  Get Ticket <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
             </motion.div>
           ))}
         </div>

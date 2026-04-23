@@ -679,6 +679,13 @@ export default function Admin_Page() {
                         className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100" 
                       />
                    </div>
+                   <input 
+                    name="image" 
+                    defaultValue={editingEvent?.image}
+                    required 
+                    className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 placeholder:text-zinc-300" 
+                    placeholder="Poster Image URL" 
+                   />
                    <textarea 
                     name="description" 
                     defaultValue={editingEvent?.description}

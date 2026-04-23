@@ -57,15 +57,18 @@ export default function Home_Page() {
             INFINITIUM <br /> <span className="text-brand-300">INSPIRING</span> <br /> INNOVATION
           </h2>
           <div className="flex flex-wrap gap-8 items-center mt-4">
-            <div className="flex flex-col">
-              <span className="text-[10px] text-brand-300/70 uppercase font-bold tracking-widest mb-1">Featured Event</span>
-              <span className="text-xl font-black uppercase italic tracking-tighter">{featuredEvent?.title || "EXPLOROMANIA"}</span>
+            <div className="flex flex-col max-w-lg">
+              <span className="text-[10px] text-brand-300/70 uppercase font-bold tracking-widest mb-1">Legacy of ARSD College</span>
+              <p className="text-sm font-medium text-brand-100/90 leading-relaxed uppercase tracking-tight">
+                INFINITIUM stands as the premier scientific hub of Atma Ram Sanatan Dharma College, 
+                unifying curiosity and academic rigor to shape the next generation of pioneers.
+              </p>
             </div>
             <Link 
-              to="/events"
+              to="/about"
               className="md:ml-auto bg-brand-500 text-brand-950 px-10 py-5 rounded-3xl font-black uppercase text-xs tracking-widest hover:bg-white transition-all shadow-2xl shadow-brand-950/20 active:scale-95"
             >
-              Explore Events
+              Our Story
             </Link>
           </div>
         </motion.div>
@@ -113,6 +116,76 @@ export default function Home_Page() {
             <Plus className="w-6 h-6" />
           </div>
         </motion.div>
+
+        {/* Ongoing & Recent Section (Moved here, Span 12) */}
+        <div className="md:col-span-12 py-12">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+            <div>
+              <h3 className="text-3xl font-black italic tracking-tighter uppercase mb-2">Ongoing & Recent</h3>
+              <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">The latest from INFINITIUM society</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+            {events.slice(0, 3).map((event: any) => (
+              <motion.div
+                key={event.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="group bg-white border border-zinc-100 rounded-[2.5rem] hover:shadow-2xl hover:shadow-brand-600/5 transition-all flex flex-col overflow-hidden"
+              >
+                <div className="aspect-[21/9] w-full relative overflow-hidden bg-slate-100">
+                  <img 
+                    src={event.image} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                    alt={event.title}
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[8px] font-black uppercase text-slate-900 tracking-widest border border-white/20">
+                    {event.date}
+                  </div>
+                </div>
+                <div className="p-8 flex flex-col justify-between flex-1">
+                  <div>
+                    <div className="flex justify-between items-start mb-6">
+                      <span className="px-4 py-1.5 bg-brand-50 text-brand-600 text-[9px] font-black uppercase tracking-widest rounded-full border border-brand-100">
+                        {event.type}
+                      </span>
+                    </div>
+                    <h4 className="text-xl font-black text-zinc-900 mb-3 tracking-tighter leading-tight group-hover:text-brand-600 transition-colors uppercase italic">
+                      {event.title}
+                    </h4>
+                    <p className="text-sm text-zinc-500 font-medium leading-relaxed mb-8 line-clamp-2">
+                      {event.description}
+                    </p>
+                  </div>
+                  <Link 
+                    to={`/events?register=${event.id}`}
+                    className="w-full py-4 border-2 border-zinc-100 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 group-hover:border-brand-500 group-hover:bg-brand-500 group-hover:text-white transition-all shadow-sm"
+                  >
+                    Join Event
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+            {events.length === 0 && (
+              <div className="col-span-full py-20 bg-zinc-50 border border-dashed border-zinc-200 rounded-[3rem] text-center">
+                <Calendar className="w-12 h-12 text-zinc-300 mx-auto mb-4" />
+                <p className="text-zinc-500 font-bold italic">No events found in the archives.</p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-center">
+            <Link 
+              to="/events" 
+              className="group flex items-center gap-3 px-12 py-5 bg-brand-950 text-white rounded-3xl font-black uppercase text-xs tracking-widest hover:bg-brand-600 transition-all shadow-2xl shadow-brand-950/20 border border-brand-900 active:scale-95"
+            >
+              View All Events <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+        </div>
 
         {/* Gallery Preview (Span 3x4) */}
         <motion.div 
@@ -218,59 +291,6 @@ export default function Home_Page() {
 
       </div>
 
-      <div className="mt-16">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
-          <div>
-            <h3 className="text-3xl font-black italic tracking-tighter uppercase mb-2">Ongoing & Recent</h3>
-            <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">The latest from INFINITIUM society</p>
-          </div>
-          <Link 
-            to="/events" 
-            className="group flex items-center gap-3 px-8 py-4 bg-brand-950 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-brand-600 transition-all shadow-xl shadow-brand-950/10 border border-brand-900"
-          >
-            View All Events <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {events.slice(0, 6).map((event: any) => (
-            <motion.div
-              key={event.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="group p-8 bg-white border border-zinc-100 rounded-[2.5rem] hover:shadow-2xl hover:shadow-brand-600/5 transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex justify-between items-start mb-6">
-                  <span className="px-4 py-1.5 bg-brand-50 text-brand-600 text-[9px] font-black uppercase tracking-widest rounded-full border border-brand-100">
-                    {event.type}
-                  </span>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{event.date}</span>
-                </div>
-                <h4 className="text-xl font-black text-zinc-900 mb-3 tracking-tighter leading-tight group-hover:text-brand-600 transition-colors uppercase italic">
-                  {event.title}
-                </h4>
-                <p className="text-sm text-zinc-500 font-medium leading-relaxed mb-8 line-clamp-3">
-                  {event.description}
-                </p>
-              </div>
-              <Link 
-                to={`/events?register=${event.id}`}
-                className="w-full py-4 border-2 border-zinc-100 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 group-hover:border-brand-500 group-hover:bg-brand-500 group-hover:text-white transition-all shadow-sm"
-              >
-                Join Event
-              </Link>
-            </motion.div>
-          ))}
-          {events.length === 0 && (
-            <div className="col-span-full py-20 bg-zinc-50 border border-dashed border-zinc-200 rounded-[3rem] text-center">
-              <Calendar className="w-12 h-12 text-zinc-300 mx-auto mb-4" />
-              <p className="text-zinc-500 font-bold italic">No events found in the archives.</p>
-            </div>
-          )}
-        </div>
-      </div>
       <div className="mt-16 bg-brand-950 rounded-[3.5rem] p-12 md:p-24 text-white relative overflow-hidden border border-brand-900">
         <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/20 blur-[100px] -translate-y-1/2 translate-x-1/2" />
         <div className="relative z-10 text-center max-w-3xl mx-auto">
