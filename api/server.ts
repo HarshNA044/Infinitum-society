@@ -38,6 +38,17 @@ let events = [
       location: 'National Science Museum',
       image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80',
       stats: { registrations: 120, attendance: 115 }
+    },
+    {
+      id: '4',
+      title: 'Quantum Leap: Physics Tech Expo',
+      description: 'The annual flagship event of Infinitium featuring guest lectures, project exhibitions, and tech challenges.',
+      date: '2026-05-30',
+      type: 'Fest',
+      status: 'Upcoming',
+      location: 'College Playground',
+      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+      stats: { registrations: 85, attendance: 0 }
     }
 ];
 

@@ -161,10 +161,10 @@ export default function Home_Page() {
                     </p>
                   </div>
                   <Link 
-                    to={`/events?register=${event.id}`}
+                    to={`/events/${event.id}`}
                     className="w-full py-4 border-2 border-zinc-100 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 group-hover:border-brand-500 group-hover:bg-brand-500 group-hover:text-white transition-all shadow-sm"
                   >
-                    Join Event
+                    Explore Event
                   </Link>
                 </div>
               </motion.div>

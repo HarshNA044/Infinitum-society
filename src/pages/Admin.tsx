@@ -25,6 +25,7 @@ export default function Admin_Page() {
   const [showMemberModal, setShowMemberModal] = useState(false);
   const [editingMember, setEditingMember] = useState<any>(null);
   const [memberImagePreview, setMemberImagePreview] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string, type: 'member' | 'event' | 'gallery' | 'achievement' } | null>(null);
   
   // Scanner state
   const [scanResult, setScanResult] = useState<any>(null);
@@ -99,13 +100,13 @@ export default function Admin_Page() {
   };
 
   const deleteMember = async (id: string) => {
-    if (confirm('Delete this member?')) {
-      try {
-        await request(`/api/members/${id}`, { method: 'DELETE' });
-        loadData();
-      } catch (err) {
-        console.error("Delete failed", err);
-      }
+    try {
+      await request(`/api/members/${id}`, { method: 'DELETE' });
+      loadData();
+      setDeleteConfirm(null);
+    } catch (err) {
+      console.error("Delete failed", err);
+      alert("Delete failed: " + (err instanceof Error ? err.message : String(err)));
     }
   };
 
@@ -441,12 +442,7 @@ export default function Admin_Page() {
                             <Edit3 className="w-3.5 h-3.5" /> Edit
                           </button>
                           <button 
-                            onClick={async () => {
-                              if(confirm('Delete event?')) {
-                                await request(`/api/events/${event.id}`, { method: 'DELETE' });
-                                loadData();
-                              }
-                            }}
+                            onClick={() => setDeleteConfirm({ id: event.id, type: 'event' })}
                             className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-bold hover:bg-red-100 transition-all flex items-center gap-1 border border-red-100"
                             title="Delete Event"
                           >
@@ -482,12 +478,7 @@ export default function Admin_Page() {
                     <Edit3 className="w-5 h-5" />
                   </button>
                   <button 
-                    onClick={async () => {
-                      if(confirm('Delete achievement?')) {
-                        await request(`/api/achievements/${a.id}`, { method: 'DELETE' });
-                        loadData();
-                      }
-                    }}
+                    onClick={() => setDeleteConfirm({ id: a.id, type: 'achievement' })}
                     className="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all border border-red-100"
                     title="Delete Achievement"
                   >
@@ -525,12 +516,7 @@ export default function Admin_Page() {
                       <Edit3 className="w-3 h-3" /> Edit
                     </button>
                     <button 
-                      onClick={async () => {
-                        if(confirm('Delete image?')) {
-                          await request(`/api/gallery/${item.id}`, { method: 'DELETE' });
-                          loadData();
-                        }
-                      }}
+                      onClick={() => setDeleteConfirm({ id: item.id, type: 'gallery' })}
                       className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all border border-red-50"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -571,7 +557,7 @@ export default function Admin_Page() {
                       <Edit3 className="w-3 h-3" /> Edit
                     </button>
                     <button 
-                      onClick={() => deleteMember(member.id)}
+                      onClick={() => setDeleteConfirm({ id: member.id, type: 'member' })}
                       className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -823,6 +809,49 @@ export default function Admin_Page() {
 
       {/* Member Modal */}
       <AnimatePresence>
+        {deleteConfirm && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+             <div className="absolute inset-0 bg-zinc-900/60 backdrop-blur-sm" onClick={() => setDeleteConfirm(null)} />
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.9 }}
+               className="relative bg-white w-full max-w-sm rounded-[2.5rem] p-10 shadow-2xl text-center"
+             >
+                <div className="w-16 h-16 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <Trash2 className="w-8 h-8" />
+                </div>
+                <h3 className="text-xl font-bold text-zinc-900 mb-4 tracking-tight">Confirm Deletion</h3>
+                <p className="text-sm text-zinc-500 mb-8 font-medium">Are you sure you want to delete this {deleteConfirm.type}? This action cannot be undone.</p>
+                
+                <div className="flex gap-4">
+                   <button 
+                     onClick={() => setDeleteConfirm(null)}
+                     className="flex-1 py-4 bg-zinc-100 text-zinc-600 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-zinc-200 transition-all font-bold"
+                   >
+                     Cancel
+                   </button>
+                   <button 
+                     onClick={() => {
+                        if (deleteConfirm.id && deleteConfirm.type) {
+                           const endpoint = deleteConfirm.type === 'member' ? 'members' : 
+                                            deleteConfirm.type === 'event' ? 'events' :
+                                            deleteConfirm.type === 'gallery' ? 'gallery' : 'achievements';
+                           request(`/api/${endpoint}/${deleteConfirm.id}`, { method: 'DELETE' }).then(() => {
+                              loadData();
+                              setDeleteConfirm(null);
+                           });
+                        }
+                     }}
+                     className="flex-1 py-4 bg-red-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-xl shadow-red-600/20"
+                   >
+                     Clear Data
+                   </button>
+                </div>
+             </motion.div>
+          </div>
+        )}
+
         {showMemberModal && (
           <div className="fixed inset-0 z-[160] flex items-center justify-center p-4">
              <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm" onClick={closeMemberModal} />

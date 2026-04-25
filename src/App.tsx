@@ -156,6 +156,7 @@ import Members_Page from './pages/Members';
 import Contact_Page from './pages/Contact';
 import Feedback_Page from './pages/Feedback';
 import Admin_Page from './pages/Admin';
+import EventDetail_Page from './pages/EventDetail';
 
 export default function App() {
   return (
@@ -167,6 +168,7 @@ export default function App() {
             <Route path="/" element={<Home_Page />} />
             <Route path="/about" element={<About_Page />} />
             <Route path="/events" element={<Events_Page />} />
+            <Route path="/events/:id" element={<EventDetail_Page />} />
             <Route path="/gallery" element={<Gallery_Page />} />
             <Route path="/achievements" element={<Achievements_Page />} />
             <Route path="/members" element={<Members_Page />} />

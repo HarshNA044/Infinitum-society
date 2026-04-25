@@ -1,26 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Calendar, MapPin, Search, Filter, ArrowRight, X, 
-  CheckCircle2, Download, QrCode as QrIcon
+  Calendar, MapPin, ArrowLeft, CheckCircle2, 
+  Download, Clock, Tag, Share2, Info, ArrowRight, X
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { jsPDF } from 'jspdf';
 import { useApi } from '../hooks/useApi';
 import { cn } from '../lib/utils';
 
-export default function Events_Page() {
-  const [searchParams] = useSearchParams();
-  const registerId = searchParams.get('register');
-  
+export default function EventDetail_Page() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const { request, loading } = useApi();
-  const [events, setEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [event, setEvent] = useState<any>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState<any>(null);
-  const [filter, setFilter] = useState('All');
-
   const [formData, setFormData] = useState({
     studentName: '',
     rollNo: '',
@@ -29,16 +25,14 @@ export default function Events_Page() {
 
   useEffect(() => {
     request('/api/events').then(data => {
-      setEvents(data);
-      if (registerId) {
-        const ev = data.find((e: any) => e.id === registerId);
-        if (ev) {
-          setSelectedEvent(ev);
-          setIsRegistering(true);
-        }
+      const ev = data.find((e: any) => e.id === id);
+      if (ev) {
+        setEvent(ev);
+      } else {
+        // Handle error or redirect
       }
     });
-  }, [registerId]);
+  }, [id]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +41,7 @@ export default function Events_Page() {
         method: 'POST',
         body: JSON.stringify({
           ...formData,
-          eventId: selectedEvent.id
+          eventId: event.id
         })
       });
       setRegistrationSuccess(data);
@@ -67,10 +61,10 @@ export default function Events_Page() {
     doc.text('Event Registration Ticket', 20, 45);
     
     doc.setFontSize(12);
-    doc.text(`Event: ${selectedEvent.title}`, 20, 65);
+    doc.text(`Event: ${event.title}`, 20, 65);
     doc.text(`Student: ${registrationSuccess.studentName}`, 20, 75);
     doc.text(`Roll No: ${registrationSuccess.rollNo}`, 20, 85);
-    doc.text(`Date & Time: ${selectedEvent.date}`, 20, 95);
+    doc.text(`Date & Time: ${event.date}`, 20, 95);
     
     doc.setFontSize(14);
     doc.text('Ticket ID:', 20, 115);
@@ -85,88 +79,156 @@ export default function Events_Page() {
     doc.save(`Ticket_${registrationSuccess.ticketId}.pdf`);
   };
 
-  const filteredEvents = events.filter((e: any) => filter === 'All' || e.type === filter);
+  if (!event) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-600"></div>
+    </div>
+  );
+
+  const isPast = event.status === 'Past';
 
   return (
-    <div className="py-20 px-4 min-h-screen bg-[#fcfcfc]">
-      <div className="max-w-7xl mx-auto">
-        <header className="mb-20 flex flex-col md:flex-row justify-between items-end gap-6">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-50 text-brand-600 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] mb-6 border border-brand-100">
-              <Calendar className="w-3 h-3" /> Schedule
-            </div>
-            <h1 className="text-4xl md:text-8xl font-black text-slate-900 tracking-tighter leading-[0.8] mb-8 italic uppercase">
-              Events & <br /> <span className="text-brand-600">Archive</span>
-            </h1>
-          </div>
-          <p className="text-slate-500 font-medium max-w-xs text-sm leading-relaxed uppercase tracking-widest text-right">
-            Broaden your horizons with our planned seminars and vibrant fests.
-          </p>
-        </header>
-
-        {/* Filters */}
-        <div className="flex flex-wrap justify-center gap-2 mb-12">
-          {['All', 'Seminar', 'Fest', 'Workshop'].map(f => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={cn(
-                "px-6 py-2 rounded-full font-bold transition-all",
-                filter === f 
-                  ? "bg-brand-600 text-white shadow-lg shadow-brand-100" 
-                  : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
-              )}
-            >
-              {f}
-            </button>
-          ))}
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <div className="relative h-[60vh] md:h-[70vh] bg-zinc-950 overflow-hidden">
+        <img 
+          src={event.image} 
+          alt={event.title}
+          className="absolute inset-0 w-full h-full object-cover opacity-50 scale-105"
+          referrerPolicy="no-referrer"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-black/20"></div>
+        
+        <div className="absolute top-8 left-8">
+           <button 
+             onClick={() => navigate(-1)}
+             className="flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur-md rounded-2xl text-white font-black uppercase text-[10px] tracking-widest border border-white/20 hover:bg-white hover:text-brand-950 transition-all"
+           >
+             <ArrowLeft className="w-4 h-4" /> Go Back
+           </button>
         </div>
 
-        {/* Events Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents.map((event: any) => (
-            <motion.div
-              layout
-              key={event.id}
-              className="bento-card group flex flex-col p-0 overflow-hidden"
-            >
-              <div className="aspect-[16/9] w-full relative overflow-hidden bg-slate-100">
-                <img 
-                  src={event.image} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                  alt={event.title}
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[9px] font-black uppercase text-slate-900 tracking-widest border border-white/20">
-                  {event.date}
+        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-20">
+          <div className="max-w-7xl mx-auto">
+             <div className="flex flex-wrap gap-4 mb-8">
+                <span className="px-4 py-1.5 bg-brand-500 text-brand-950 text-[10px] font-black uppercase tracking-widest rounded-full">
+                  {event.type}
+                </span>
+                <span className={cn(
+                  "px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full border",
+                  isPast ? "bg-slate-100 text-slate-500 border-slate-200" : "bg-emerald-100 text-emerald-600 border-emerald-200"
+                )}>
+                  {event.status}
+                </span>
+             </div>
+             <h1 className="text-5xl md:text-8xl font-black text-slate-900 tracking-tighter leading-none italic uppercase mb-8">
+               {event.title}
+             </h1>
+             <div className="flex flex-wrap gap-12 items-center">
+                <div className="flex items-center gap-3">
+                   <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-brand-600 shadow-xl">
+                      <Calendar className="w-6 h-6" />
+                   </div>
+                   <div>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">DATE & TIME</p>
+                      <p className="text-sm font-bold text-slate-700">{event.date}</p>
+                   </div>
                 </div>
-              </div>
-              <div className="p-8 flex flex-col flex-1">
-                <div className="mb-6 flex justify-between items-start">
-                  <div className="bg-brand-50 w-12 h-12 rounded-2xl flex items-center justify-center text-brand-600 shadow-sm border border-brand-100 group-hover:scale-110 transition-transform">
-                    <Calendar className="w-6 h-6" />
-                  </div>
-                  <span className="text-[9px] bento-tag bg-brand-950 text-brand-300 font-black uppercase tracking-widest">{event.type}</span>
+                <div className="flex items-center gap-3">
+                   <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-brand-600 shadow-xl">
+                      <MapPin className="w-6 h-6" />
+                   </div>
+                   <div>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">LOCATION</p>
+                      <p className="text-sm font-bold text-slate-700">{event.location}</p>
+                   </div>
                 </div>
-                <h3 className="text-xl font-black text-slate-900 mb-3 tracking-tighter uppercase leading-tight group-hover:text-brand-600 transition-colors italic">{event.title}</h3>
-                <p className="text-xs text-slate-500 mb-8 leading-relaxed line-clamp-3 font-medium flex-1">
-                  {event.description}
-                </p>
-                
-                <div className="flex items-center gap-2 text-slate-400 mb-8 text-[10px] font-bold uppercase tracking-widest">
-                  <MapPin className="w-3 h-3 text-brand-600" />
-                  {event.location}
-                </div>
+             </div>
+          </div>
+        </div>
+      </div>
 
-                <Link
-                  to={`/events/${event.id}`}
-                  className="w-full py-4 bg-brand-950 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-brand-600 transition-all flex items-center justify-center gap-2 group-hover:shadow-lg group-hover:shadow-brand-600/20 active:scale-95 border border-brand-900"
-                >
-                  Explore Event <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </motion.div>
-          ))}
+      {/* Content Section */}
+      <div className="max-w-7xl mx-auto px-8 py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-20">
+          
+          <div className="lg:col-span-8">
+            <div className="mb-12">
+               <h2 className="text-xs font-black uppercase tracking-[0.4em] text-brand-600 mb-6 flex items-center gap-4">
+                  <span className="w-12 h-[2px] bg-brand-600"></span> Event Information
+               </h2>
+               <p className="text-xl text-slate-600 font-medium leading-relaxed">
+                 {event.description}
+               </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+               <div className="p-8 bg-zinc-50 rounded-[2.5rem] border border-zinc-100 italic">
+                  <h4 className="text-sm font-black text-slate-900 uppercase tracking-tighter mb-4 flex items-center gap-2">
+                    <Info className="w-4 h-4 text-brand-600" /> Key Highlights
+                  </h4>
+                  <ul className="space-y-3 text-sm text-slate-500 font-bold uppercase tracking-widest">
+                    <li>• Industry Insights</li>
+                    <li>• Networking Session</li>
+                    <li>• Refreshments Provided</li>
+                    <li>• E-Certificates included</li>
+                  </ul>
+               </div>
+               <div className="p-8 bg-zinc-50 rounded-[2.5rem] border border-zinc-100 italic">
+                  <h4 className="text-sm font-black text-slate-900 uppercase tracking-tighter mb-4 flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-brand-600" /> Schedule Details
+                  </h4>
+                  <ul className="space-y-3 text-sm text-slate-500 font-bold uppercase tracking-widest">
+                    <li>10:00 AM - Registration</li>
+                    <li>10:30 AM - Keynote</li>
+                    <li>12:00 PM - Q&A</li>
+                    <li>01:00 PM - Valedictory</li>
+                  </ul>
+               </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-4">
+             <div className="sticky top-32">
+                <div className="bg-brand-950 p-10 rounded-[3rem] text-white shadow-2xl shadow-brand-950/20 border border-brand-900">
+                   <h3 className="text-2xl font-black italic tracking-tighter uppercase mb-6">Reservation</h3>
+                   <div className="space-y-6 mb-10">
+                      <div className="flex justify-between items-center py-4 border-b border-white/10">
+                         <span className="text-xs font-bold text-brand-300 uppercase tracking-widest">Ticket Type</span>
+                         <span className="font-black italic">Free entry</span>
+                      </div>
+                      <div className="flex justify-between items-center py-4 border-b border-white/10">
+                         <span className="text-xs font-bold text-brand-300 uppercase tracking-widest">Available Seats</span>
+                         <span className="font-black italic">{isPast ? '0' : 'Limited'}</span>
+                      </div>
+                   </div>
+
+                   {isPast ? (
+                     <div className="w-full py-6 bg-white/5 border border-white/10 rounded-2xl text-brand-300 font-black uppercase text-[10px] tracking-widest text-center">
+                        Registration Closed
+                     </div>
+                   ) : (
+                     <button 
+                       onClick={() => setIsRegistering(true)}
+                       className="w-full py-6 bg-brand-500 text-brand-950 rounded-2xl font-black uppercase text-sm tracking-[0.2em] hover:bg-white transition-all shadow-xl shadow-brand-950/20 active:scale-95"
+                     >
+                       Register Now
+                     </button>
+                   )}
+
+                   <div className="mt-8 flex items-center justify-center gap-6">
+                      <button className="p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+                        <Share2 className="w-5 h-5 text-brand-300" />
+                      </button>
+                      <button className="p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+                        <Tag className="w-5 h-5 text-brand-300" />
+                      </button>
+                   </div>
+                </div>
+             </div>
+          </div>
+
         </div>
       </div>
 
@@ -201,7 +263,7 @@ export default function Events_Page() {
                    
                    <div className="bg-brand-950 p-8 rounded-3xl mb-10 text-white relative overflow-hidden border border-brand-900">
                      <p className="text-[10px] font-black text-brand-400 uppercase tracking-[0.3em] mb-2">EVENT CONFIRMATION</p>
-                     <p className="text-xl font-bold italic text-brand-200">{selectedEvent?.title}</p>
+                     <p className="text-xl font-bold italic text-brand-200">{event?.title}</p>
                      <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/20 blur-2xl rotate-45 transform translate-x-12 -translate-y-12"></div>
                    </div>
 
@@ -257,7 +319,7 @@ export default function Events_Page() {
                   </div>
                   <h2 className="text-4xl font-black text-slate-900 mb-4 tracking-tighter uppercase italic">Success</h2>
                   <p className="text-xs text-slate-500 mb-10 font-bold uppercase tracking-widest leading-loose">
-                    Registration confirmed for <span className="text-brand-600 italic">{selectedEvent?.title}</span>. 
+                    Registration confirmed for <span className="text-brand-600 italic">{event?.title}</span>. 
                     <br />Save the ticket below.
                   </p>
                   
@@ -284,12 +346,11 @@ export default function Events_Page() {
                       onClick={() => {
                         setIsRegistering(false);
                         setRegistrationSuccess(null);
-                        setSelectedEvent(null);
                         setFormData({ studentName: '', rollNo: '', email: '' });
                       }}
                       className="w-full py-4 text-slate-400 font-black uppercase text-[10px] tracking-widest hover:text-slate-900 transition-colors"
                     >
-                      Return to Events
+                      Return to Details
                     </button>
                   </div>
                 </div>
