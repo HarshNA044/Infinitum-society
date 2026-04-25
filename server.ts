@@ -10,7 +10,8 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json());
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
   // In-memory "database" for the prototype
   // In a real app, this would be a real DB or Google AppScript/Excel connection
@@ -53,21 +54,24 @@ async function startServer() {
   let registrations = [];
   let feedback = [];
   let members = [
-    { id: '1', name: 'Saksham Raj', role: 'President', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '2', name: 'Ritik', role: 'Vice-President', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '3', name: 'Vaishanvi Shukla', role: 'Vice-President', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '4', name: 'Sarthak Jiswal', role: 'Secretary', image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '5', name: 'Ayush Kumar Garg', role: 'Joint Secretary', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '6', name: 'Mritunjay Yadav', role: 'Academic Head', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '7', name: 'Divyansh Pratap Singh', role: 'Content Head', image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '8', name: 'Pragya Saxena', role: 'Content Sub-head', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '9', name: 'Atul Singh', role: 'Digital Head', image: 'https://images.unsplash.com/photo-1552058544-f2b08422138a?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '10', name: 'Nishant', role: 'Digital Sub-head', image: 'https://images.unsplash.com/photo-1493106819501-66d381c466f1?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '11', name: 'Niranjan Tripathi', role: 'Event Head', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '12', name: 'Raunak Kumar', role: 'Event Sub-head', image: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '13', name: 'Vikas Yadav', role: 'PR Head', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '14', name: 'Keshav Agrawal', role: 'PR Sub-head', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop', linkedin: '#' },
-    { id: '15', name: 'Shrishti Singh', role: 'Sponsorship Head', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop', linkedin: '#' },
+    { id: '1', name: 'Saksham Raj', role: 'President', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '2', name: 'Ritik', role: 'Vice-President', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '3', name: 'Vaishanvi Shukla', role: 'Vice-President', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '4', name: 'Sarthak Jiswal', role: 'Secretary', image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '5', name: 'Ayush Kumar Garg', role: 'Joint Secretary', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '6', name: 'Mritunjay Yadav', role: 'Academic Head', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '7', name: 'Divyansh Pratap Singh', role: 'Content Head', image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '8', name: 'Pragya Saxena', role: 'Content Sub-head', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '9', name: 'Atul Singh', role: 'Digital Head', image: 'https://images.unsplash.com/photo-1552058544-f2b08422138a?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '10', name: 'Nishant', role: 'Digital Sub-head', image: 'https://images.unsplash.com/photo-1493106819501-66d381c466f1?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '11', name: 'Niranjan Tripathi', role: 'Event Head', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '12', name: 'Raunak Kumar', role: 'Event Sub-head', image: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '13', name: 'Vikas Yadav', role: 'PR Head', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '14', name: 'Keshav Agrawal', role: 'PR Sub-head', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    { id: '15', name: 'Shrishti Singh', role: 'Sponsorship Head', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
+    // Past Members
+    { id: '16', name: 'Former Pres', role: 'President', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop', linkedin: '#', tenure: '2023-24' },
+    { id: '17', name: 'Former VP', role: 'Vice-President', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop', linkedin: '#', tenure: '2023-24' },
   ];
 
   let achievements = [
@@ -142,8 +146,14 @@ async function startServer() {
   });
 
   app.delete('/api/events/:id', (req, res) => {
-    events = events.filter(e => e.id !== req.params.id);
-    res.json({ success: true });
+    const { id } = req.params;
+    const index = events.findIndex(e => e.id === id);
+    if (index !== -1) {
+      events.splice(index, 1);
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ error: 'Event not found' });
+    }
   });
 
   app.get('/api/about', (req, res) => res.json(aboutData));
@@ -171,8 +181,14 @@ async function startServer() {
   });
 
   app.delete('/api/gallery/:id', (req, res) => {
-    galleryItems = galleryItems.filter(item => item.id !== req.params.id);
-    res.json({ success: true });
+    const { id } = req.params;
+    const index = galleryItems.findIndex(item => item.id === id);
+    if (index !== -1) {
+      galleryItems.splice(index, 1);
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ error: 'Gallery item not found' });
+    }
   });
 
   app.get('/api/contact', (req, res) => res.json(contactData));
@@ -236,8 +252,13 @@ async function startServer() {
 
   app.delete('/api/members/:id', (req, res) => {
     const { id } = req.params;
-    members = members.filter(m => m.id !== id);
-    res.json({ success: true });
+    const index = members.findIndex(m => m.id === id);
+    if (index !== -1) {
+      members.splice(index, 1);
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ error: 'Member not found' });
+    }
   });
 
   app.get('/api/achievements', (req, res) => res.json(achievements));
@@ -260,8 +281,14 @@ async function startServer() {
   });
 
   app.delete('/api/achievements/:id', (req, res) => {
-    achievements = achievements.filter(a => a.id !== req.params.id);
-    res.json({ success: true });
+    const { id } = req.params;
+    const index = achievements.findIndex(a => a.id === id);
+    if (index !== -1) {
+      achievements.splice(index, 1);
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ error: 'Achievement not found' });
+    }
   });
 
   app.post('/api/feedback', (req, res) => {

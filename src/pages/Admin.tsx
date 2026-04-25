@@ -24,6 +24,7 @@ export default function Admin_Page() {
   const [editingEvent, setEditingEvent] = useState<any>(null);
   const [showMemberModal, setShowMemberModal] = useState(false);
   const [editingMember, setEditingMember] = useState<any>(null);
+  const [memberImagePreview, setMemberImagePreview] = useState<string | null>(null);
   
   // Scanner state
   const [scanResult, setScanResult] = useState<any>(null);
@@ -51,14 +52,34 @@ export default function Admin_Page() {
     request('/api/gallery').then(setGallery);
   };
 
+  const handleMemberFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert("Image size exceeds 2MB. Please choose a smaller file.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setMemberImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleMemberSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const startYear = formData.get('startYear');
+    const endYear = formData.get('endYear');
+    const tenure = `${startYear}-${endYear?.toString().slice(-2)}`;
+
     const data = {
       name: formData.get('name'),
       role: formData.get('role'),
-      image: formData.get('image'),
+      image: memberImagePreview || formData.get('image'),
       linkedin: formData.get('linkedin'),
+      tenure: tenure,
     };
 
     if (editingMember) {
@@ -78,10 +99,20 @@ export default function Admin_Page() {
   };
 
   const deleteMember = async (id: string) => {
-    if (window.confirm('Delete this member?')) {
-      await request(`/api/members/${id}`, { method: 'DELETE' });
-      loadData();
+    if (confirm('Delete this member?')) {
+      try {
+        await request(`/api/members/${id}`, { method: 'DELETE' });
+        loadData();
+      } catch (err) {
+        console.error("Delete failed", err);
+      }
     }
+  };
+
+  const closeMemberModal = () => {
+    setShowMemberModal(false);
+    setEditingMember(null);
+    setMemberImagePreview(null);
   };
 
   const handleEventSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -262,6 +293,7 @@ export default function Admin_Page() {
             <button 
               onClick={() => {
                 setEditingMember(null);
+                setMemberImagePreview(null);
                 setShowMemberModal(true);
               }}
               className="flex items-center gap-2 px-6 py-3 bg-brand-950 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-brand-600 transition-all shadow-xl shadow-brand-950/20 border border-brand-900"
@@ -524,12 +556,14 @@ export default function Admin_Page() {
                     <div>
                       <h4 className="font-bold text-zinc-900">{member.name}</h4>
                       <p className="text-xs text-brand-600 font-bold uppercase tracking-widest">{member.role}</p>
+                      <p className="text-[9px] text-zinc-400 font-bold uppercase mt-1">Tenure: {member.tenure}</p>
                     </div>
                   </div>
                   <div className="flex gap-2">
                     <button 
                       onClick={() => {
                         setEditingMember(member);
+                        setMemberImagePreview(member.image);
                         setShowMemberModal(true);
                       }}
                       className="flex-1 py-2 bg-zinc-100 text-zinc-600 rounded-xl text-xs font-bold hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"
@@ -791,17 +825,34 @@ export default function Admin_Page() {
       <AnimatePresence>
         {showMemberModal && (
           <div className="fixed inset-0 z-[160] flex items-center justify-center p-4">
-             <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm" onClick={() => setShowMemberModal(false)} />
+             <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm" onClick={closeMemberModal} />
              <motion.div 
                initial={{ opacity: 0, scale: 0.9 }}
                animate={{ opacity: 1, scale: 1 }}
                exit={{ opacity: 0, scale: 0.9 }}
-               className="relative bg-white w-full max-w-lg rounded-[3.5rem] p-10 shadow-2xl"
+               className="relative bg-white w-full max-w-lg rounded-[3.5rem] p-10 shadow-2xl max-h-[90vh] overflow-y-auto"
              >
                 <h2 className="text-3xl font-bold mb-8">
                   {editingMember ? 'Edit Member' : 'Add New Member'}
                 </h2>
                 <form onSubmit={handleMemberSubmit} className="space-y-6">
+                   <div className="flex flex-col items-center gap-4 mb-8">
+                      <div className="w-32 h-32 rounded-[2.5rem] bg-zinc-50 border-4 border-zinc-100 overflow-hidden relative group">
+                        {memberImagePreview ? (
+                          <img src={memberImagePreview} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-zinc-300">
+                            <Camera className="w-10 h-10" />
+                          </div>
+                        )}
+                        <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                          <Plus className="text-white w-8 h-8" />
+                          <input type="file" className="hidden" accept="image/*" onChange={handleMemberFileChange} />
+                        </label>
+                      </div>
+                      <p className="text-[10px] font-black uppercase text-zinc-400 tracking-widest">Click to upload photo</p>
+                   </div>
+
                    <div className="space-y-2">
                      <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest pl-2">Full Name</label>
                      <input 
@@ -812,21 +863,48 @@ export default function Admin_Page() {
                        placeholder="e.g. Sneha Sharma" 
                      />
                    </div>
-                   <div className="space-y-2">
-                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest pl-2">Role</label>
-                     <input 
-                       name="role" 
-                       defaultValue={editingMember?.role}
-                       required
-                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-brand-600 outline-none transition-all" 
-                       placeholder="e.g. President" 
-                     />
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div className="space-y-2">
+                       <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest pl-2">Role</label>
+                       <input 
+                         name="role" 
+                         defaultValue={editingMember?.role}
+                         required
+                         className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-brand-600 outline-none transition-all" 
+                         placeholder="e.g. President" 
+                       />
+                     </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest pl-2">Tenure</label>
+                        <div className="flex items-center gap-2">
+                          <select 
+                            name="startYear" 
+                            defaultValue={editingMember?.tenure?.split('-')[0] || new Date().getFullYear()}
+                            className="w-full px-4 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-brand-600 outline-none transition-all font-bold text-sm"
+                          >
+                            {Array.from({ length: 15 }, (_, i) => (new Date().getFullYear() + 1) - i).map(year => (
+                              <option key={year} value={year}>{year}</option>
+                            ))}
+                          </select>
+                          <span className="font-black text-zinc-300">-</span>
+                          <select 
+                            name="endYear" 
+                            defaultValue={editingMember?.tenure ? '20' + editingMember.tenure.split('-')[1] : new Date().getFullYear() + 1}
+                            className="w-full px-4 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-brand-600 outline-none transition-all font-bold text-sm"
+                          >
+                            {Array.from({ length: 15 }, (_, i) => (new Date().getFullYear() + 2) - i).map(year => (
+                              <option key={year} value={year}>{year}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
                    </div>
                    <div className="space-y-2">
-                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest pl-2">Profile Image URL</label>
+                     <label className="text-xs font-bold text-zinc-400 uppercase tracking-widest pl-2">Or Profile Image URL</label>
                      <input 
                        name="image" 
-                       defaultValue={editingMember?.image}
+                       value={memberImagePreview || ''}
+                       onChange={(e) => setMemberImagePreview(e.target.value)}
                        required
                        className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 focus:border-brand-600 outline-none transition-all" 
                        placeholder="https://..." 
