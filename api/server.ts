@@ -56,7 +56,12 @@ let events = [
     }
 ];
 
-let registrations = [];
+let registrations = [
+    { eventId: '1', eventTitle: 'Exploromania: Motivational Seminar', studentName: 'Rahul Kumar', rollNo: '22/PH/001', email: 'rahul.k@arsd.du.ac.in', ticketId: 'INF-RAHUL01', attended: true, timestamp: new Date('2024-02-09T10:00:00Z') },
+    { eventId: '1', eventTitle: 'Exploromania: Motivational Seminar', studentName: 'Priya Singh', rollNo: '22/PH/015', email: 'priya.s@arsd.du.ac.in', ticketId: 'INF-PRIYA15', attended: true, timestamp: new Date('2024-02-09T10:05:00Z') },
+    { eventId: '2', eventTitle: 'Beyond the Veil: Supernatural Science', studentName: 'Amit Sharma', rollNo: '23/PH/042', email: 'amit.sh@arsd.du.ac.in', ticketId: 'INF-AMIT42', attended: false, timestamp: new Date('2024-03-14T14:20:00Z') },
+    { eventId: '4', eventTitle: 'Quantum Leap: Physics Tech Expo', studentName: 'Sneha Verma', rollNo: '24/PH/102', email: 'sneha.v@arsd.du.ac.in', ticketId: 'INF-SNEHA02', attended: false, timestamp: new Date() }
+];
 let feedback = [];
 let members = [
     { id: '1', name: 'Saksham Raj', role: 'President', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop', linkedin: '#', tenure: '2024-25' },
@@ -204,16 +209,27 @@ app.put('/api/contact', (req, res) => {
 
 app.post('/api/register', (req, res) => {
   const { eventId, studentName, rollNo, email } = req.body;
+  const event = events.find(e => e.id === eventId);
   const ticketId = `INF-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-  const registration = { eventId, studentName, rollNo, email, ticketId, attended: false, timestamp: new Date() };
+  const registration = { 
+    eventId, 
+    eventTitle: event?.title || 'Unknown Event',
+    studentName, 
+    rollNo, 
+    email, 
+    ticketId, 
+    attended: false, 
+    timestamp: new Date() 
+  };
   registrations.push(registration);
   
   // Update event stats
-  const event = events.find(e => e.id === eventId);
   if (event) event.stats.registrations++;
   
   res.json(registration);
 });
+
+app.get('/api/registrations', (req, res) => res.json(registrations));
 
 app.post('/api/mark-attendance', (req, res) => {
   const { ticketId } = req.body;

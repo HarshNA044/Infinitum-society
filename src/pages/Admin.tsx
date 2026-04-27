@@ -4,7 +4,7 @@ import {
   BarChart3, Plus, Scan, Users, Calendar, 
   Trash2, CheckCircle, XCircle, ChevronLeft,
   LayoutDashboard, ListOrdered, Camera, Linkedin, Edit3,
-  Trophy
+  Trophy, Download
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, 
@@ -328,7 +328,8 @@ export default function Admin_Page() {
             <h1 className="text-3xl font-bold text-zinc-900 mb-2 capitalize">{activeTab} Panel</h1>
             <p className="text-zinc-500 font-medium">Manage INFINITIUM's backend operations.</p>
           </div>
-          {activeTab === 'events' && (
+          <div className="flex gap-4">
+            {activeTab === 'events' && (
             <button 
               onClick={() => {
                 setEditingEvent(null);
@@ -373,6 +374,7 @@ export default function Admin_Page() {
               <Plus className="w-5 h-5" /> Add Image
             </button>
           )}
+          </div>
         </header>
 
         {activeTab === 'overview' && (

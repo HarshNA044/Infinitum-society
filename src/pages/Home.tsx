@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { 
   ArrowRight, Calendar, Users, Trophy, ChevronRight, Zap, Star, 
-  Plus, QrCode as QrIcon 
+  Plus, QrCode as QrIcon, Lightbulb, Book, MessageSquare, Globe2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
@@ -110,6 +110,7 @@ export default function Home_Page() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
           className="md:col-span-4 md:row-span-1 bg-amber-400 rounded-[2rem] border border-amber-500 p-6 flex items-center justify-between hover:scale-[1.02] transition-transform cursor-pointer"
+          onClick={() => window.scrollTo({ top: document.getElementById('events-section')?.offsetTop || 0, behavior: 'smooth' })}
         >
           <div className="flex flex-col">
             <h4 className="font-black text-amber-950 uppercase text-lg tracking-tighter leading-none">Quick Register</h4>
@@ -120,8 +121,8 @@ export default function Home_Page() {
           </div>
         </motion.div>
 
-        {/* Ongoing & Recent Section (Moved here, Span 12) */}
-        <div className="md:col-span-12 py-12">
+        {/* Ongoing & Recent Section (Span 12) */}
+        <div id="events-section" className="md:col-span-12 py-12">
           <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
             <div>
               <h3 className="text-3xl font-black italic tracking-tighter uppercase mb-2">Ongoing & Recent</h3>
@@ -172,12 +173,6 @@ export default function Home_Page() {
                 </div>
               </motion.div>
             ))}
-            {events.length === 0 && (
-              <div className="col-span-full py-20 bg-zinc-50 border border-dashed border-zinc-200 rounded-[3rem] text-center">
-                <Calendar className="w-12 h-12 text-zinc-300 mx-auto mb-4" />
-                <p className="text-zinc-500 font-bold italic">No events found in the archives.</p>
-              </div>
-            )}
           </div>
 
           <div className="flex justify-center">

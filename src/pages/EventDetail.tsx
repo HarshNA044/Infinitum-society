@@ -41,9 +41,30 @@ export default function EventDetail_Page() {
         method: 'POST',
         body: JSON.stringify({
           ...formData,
-          eventId: event.id
+          eventId: event.id,
+          eventTitle: event.title
         })
       });
+
+      // Optional: Sync with Google Sheets via Apps Script
+      const appsScriptUrl = (import.meta as any).env.VITE_APPS_SCRIPT_URL;
+      if (appsScriptUrl) {
+        try {
+          await fetch(appsScriptUrl, {
+            method: 'POST',
+            mode: 'no-cors', // Apps Script requires no-cors if not using complex Auth
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ...formData,
+              eventTitle: event.title,
+              ticketId: data.ticketId
+            })
+          });
+        } catch (syncErr) {
+          console.warn("External sync failed", syncErr);
+        }
+      }
+
       setRegistrationSuccess(data);
     } catch (err) {
       console.error(err);
