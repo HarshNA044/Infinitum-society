@@ -9,6 +9,7 @@ let events = [
     {
       id: '1',
       title: 'Exploromania: Motivational Seminar',
+      subtitle: 'Pathways to Personal & Professional Excellence',
       description: 'A seminar by Dr. Lajjaram Bishnoi (DGP of Meghalaya) on mental health and cracking civil services.',
       date: '2024-02-10',
       type: 'Seminar',
@@ -20,6 +21,7 @@ let events = [
     {
       id: '2',
       title: 'Beyond the Veil: Supernatural Science',
+      subtitle: 'Unmasking the Mysteries of the Paranormal',
       description: 'Exploring the science behind supernatural beliefs with Mr. Waqar Raj (Indian Paranormal Society).',
       date: '2024-03-15',
       type: 'Seminar',
@@ -31,6 +33,7 @@ let events = [
     {
       id: '3',
       title: 'Socio-Sync: Science Museum Visit',
+      subtitle: 'A Journey Through Scientific Evolution',
       description: 'Exploring the intertwined nature of Physics, Chemistry, Biology and Technology at National Science Museum.',
       date: '2024-04-20',
       type: 'Field Trip',
@@ -42,6 +45,7 @@ let events = [
     {
       id: '4',
       title: 'Quantum Leap: Physics Tech Expo',
+      subtitle: 'Celebrating the Wonders of Modern Physics',
       description: 'The annual flagship event of Infinitium featuring guest lectures, project exhibitions, and tech challenges.',
       date: '2026-05-30',
       type: 'Fest',

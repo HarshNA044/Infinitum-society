@@ -25,6 +25,8 @@ export default function Admin_Page() {
   const [showMemberModal, setShowMemberModal] = useState(false);
   const [editingMember, setEditingMember] = useState<any>(null);
   const [memberImagePreview, setMemberImagePreview] = useState<string | null>(null);
+  const [eventImagePreview, setEventImagePreview] = useState<string | null>(null);
+  const [galleryImagePreview, setGalleryImagePreview] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string, type: 'member' | 'event' | 'gallery' | 'achievement' } | null>(null);
   
   // Scanner state
@@ -63,6 +65,36 @@ export default function Admin_Page() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setMemberImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEventFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image size exceeds 5MB. Please choose a smaller file.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEventImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleGalleryFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image size exceeds 5MB. Please choose a smaller file.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setGalleryImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -121,8 +153,11 @@ export default function Admin_Page() {
     const formData = new FormData(e.currentTarget);
     const data = {
       title: formData.get('title'),
+      subtitle: formData.get('subtitle'),
       type: formData.get('type'),
       date: formData.get('date'),
+      location: formData.get('location'),
+      image: eventImagePreview || formData.get('image'),
       description: formData.get('description'),
       status: editingEvent?.status || 'Upcoming'
     };
@@ -140,7 +175,14 @@ export default function Admin_Page() {
     }
     setShowAddEvent(false);
     setEditingEvent(null);
+    setEventImagePreview(null);
     loadData();
+  };
+
+  const closeEventModal = () => {
+    setShowAddEvent(false);
+    setEditingEvent(null);
+    setEventImagePreview(null);
   };
 
   const handleAchievementSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -172,7 +214,7 @@ export default function Admin_Page() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = {
-      src: formData.get('src'),
+      src: galleryImagePreview || formData.get('src'),
       title: formData.get('title'),
       description: formData.get('description'),
       category: formData.get('category')
@@ -191,7 +233,14 @@ export default function Admin_Page() {
     }
     setShowGalleryModal(false);
     setEditingGallery(null);
+    setGalleryImagePreview(null);
     loadData();
+  };
+
+  const closeGalleryModal = () => {
+    setShowGalleryModal(false);
+    setEditingGallery(null);
+    setGalleryImagePreview(null);
   };
 
   useEffect(() => {
@@ -434,6 +483,7 @@ export default function Admin_Page() {
                           <button 
                             onClick={() => {
                               setEditingEvent(event);
+                              setEventImagePreview(event.image);
                               setShowAddEvent(true);
                             }}
                             className="px-3 py-1.5 bg-brand-50 text-brand-600 rounded-lg text-xs font-bold hover:bg-brand-100 transition-all flex items-center gap-1 border border-brand-100"
@@ -509,6 +559,7 @@ export default function Admin_Page() {
                     <button 
                       onClick={() => {
                         setEditingGallery(item);
+                        setGalleryImagePreview(item.src);
                         setShowGalleryModal(true);
                       }}
                       className="flex-1 py-2 bg-zinc-50 text-zinc-600 rounded-xl text-xs font-bold hover:bg-brand-50 hover:text-brand-600 transition-all border border-zinc-100 flex items-center justify-center gap-2"
@@ -669,16 +720,45 @@ export default function Admin_Page() {
       <AnimatePresence>
         {showAddEvent && (
           <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-             <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm" onClick={() => { setShowAddEvent(false); setEditingEvent(null); }} />
-             <div className="relative bg-white w-full max-w-2xl rounded-[3.5rem] p-12 shadow-2xl">
+             <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm" onClick={closeEventModal} />
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.9 }}
+               className="relative bg-white w-full max-w-2xl rounded-[3.5rem] p-12 shadow-2xl max-h-[90vh] overflow-y-auto"
+             >
                 <h2 className="text-3xl font-bold mb-8">{editingEvent ? 'Edit Event' : 'Create New Event'}</h2>
                 <form className="space-y-6" onSubmit={handleEventSubmit}>
+                   <div className="flex flex-col items-center gap-4 mb-8">
+                      <div className="w-full aspect-video rounded-[2.5rem] bg-zinc-50 border-4 border-zinc-100 overflow-hidden relative group">
+                        {eventImagePreview ? (
+                          <img src={eventImagePreview} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center text-zinc-300 gap-2">
+                            <Camera className="w-10 h-10" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">No Poster Selected</span>
+                          </div>
+                        )}
+                        <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                          <Plus className="text-white w-10 h-10" />
+                          <input type="file" className="hidden" accept="image/*" onChange={handleEventFileChange} />
+                        </label>
+                      </div>
+                      <p className="text-[10px] font-black uppercase text-zinc-400 tracking-widest">Click to upload poster image</p>
+                   </div>
+
                    <input 
                     name="title" 
                     defaultValue={editingEvent?.title}
                     required 
-                    className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 placeholder:text-zinc-300" 
+                    className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 placeholder:text-zinc-300 font-bold" 
                     placeholder="Event Title" 
+                   />
+                   <input 
+                    name="subtitle" 
+                    defaultValue={editingEvent?.subtitle}
+                    className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 placeholder:text-zinc-300" 
+                    placeholder="Event Subtitle (e.g. A Journey through Quantum Mechanics)" 
                    />
                    <div className="grid grid-cols-2 gap-4">
                       <select 
@@ -700,12 +780,23 @@ export default function Admin_Page() {
                       />
                    </div>
                    <input 
-                    name="image" 
-                    defaultValue={editingEvent?.image}
+                    name="location" 
+                    defaultValue={editingEvent?.location}
                     required 
                     className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 placeholder:text-zinc-300" 
-                    placeholder="Poster Image URL" 
+                    placeholder="Event Location (e.g. Auditorium)" 
                    />
+                   <div className="space-y-2">
+                     <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest pl-2">Or Poster Image URL</label>
+                     <input 
+                       name="image" 
+                       value={eventImagePreview || ''}
+                       onChange={(e) => setEventImagePreview(e.target.value)}
+                       required
+                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 placeholder:text-zinc-300 transition-all" 
+                       placeholder="https://..." 
+                     />
+                   </div>
                    <textarea 
                     name="description" 
                     defaultValue={editingEvent?.description}
@@ -717,7 +808,7 @@ export default function Admin_Page() {
                     {editingEvent ? 'Update Event' : 'Launch Event'}
                    </button>
                 </form>
-             </div>
+             </motion.div>
           </div>
         )}
       </AnimatePresence>
@@ -764,18 +855,41 @@ export default function Admin_Page() {
       <AnimatePresence>
         {showGalleryModal && (
           <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-             <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm" onClick={() => { setShowGalleryModal(false); setEditingGallery(null); }} />
-             <div className="relative bg-white w-full max-w-2xl rounded-[3.5rem] p-12 shadow-2xl">
+             <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm" onClick={closeGalleryModal} />
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.9 }}
+               className="relative bg-white w-full max-w-2xl rounded-[3.5rem] p-12 shadow-2xl max-h-[90vh] overflow-y-auto"
+             >
                 <h2 className="text-3xl font-bold mb-8">{editingGallery ? 'Edit Gallery Item' : 'Add Gallery Image'}</h2>
                 <form className="space-y-6" onSubmit={handleGallerySubmit}>
+                   <div className="flex flex-col items-center gap-4 mb-8">
+                      <div className="w-full aspect-square max-w-[300px] rounded-[2.5rem] bg-zinc-50 border-4 border-zinc-100 overflow-hidden relative group mx-auto">
+                        {galleryImagePreview ? (
+                          <img src={galleryImagePreview} alt="Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center text-zinc-300 gap-2">
+                            <Camera className="w-10 h-10" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">No Image Selected</span>
+                          </div>
+                        )}
+                        <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                          <Plus className="text-white w-10 h-10" />
+                          <input type="file" className="hidden" accept="image/*" onChange={handleGalleryFileChange} />
+                        </label>
+                      </div>
+                      <p className="text-[10px] font-black uppercase text-zinc-400 tracking-widest text-center">Click to upload photo from your device</p>
+                   </div>
+
                    <input 
                     name="title" 
                     defaultValue={editingGallery?.title}
                     required 
-                    className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 placeholder:text-zinc-300" 
+                    className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 placeholder:text-zinc-300 font-bold" 
                     placeholder="Image Title" 
                    />
-                   <div className="grid grid-cols-2 gap-4">
+                   <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                       <input 
                         name="category" 
                         defaultValue={editingGallery?.category || 'Events'}
@@ -783,13 +897,17 @@ export default function Admin_Page() {
                         className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100" 
                         placeholder="Category (e.g. Events, Academic)"
                       />
-                      <input 
-                        name="src" 
-                        defaultValue={editingGallery?.src}
-                        required 
-                        className="w-full px-5 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100" 
-                        placeholder="Image URL"
-                      />
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest pl-2">Or Image URL</label>
+                     <input 
+                       name="src" 
+                       value={galleryImagePreview || ''}
+                       onChange={(e) => setGalleryImagePreview(e.target.value)}
+                       required
+                       className="w-full px-6 py-4 bg-zinc-50 rounded-2xl border-2 border-zinc-100 placeholder:text-zinc-300 transition-all font-mono text-xs" 
+                       placeholder="https://..." 
+                     />
                    </div>
                    <textarea 
                     name="description" 
@@ -802,7 +920,7 @@ export default function Admin_Page() {
                     {editingGallery ? 'Update Item' : 'Add to Gallery'}
                    </button>
                 </form>
-             </div>
+             </motion.div>
           </div>
         )}
       </AnimatePresence>

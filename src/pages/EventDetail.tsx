@@ -98,20 +98,11 @@ export default function EventDetail_Page() {
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
-        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-black/40"></div>
         
-        <div className="absolute top-8 left-8">
-           <button 
-             onClick={() => navigate(-1)}
-             className="flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur-md rounded-2xl text-white font-black uppercase text-[10px] tracking-widest border border-white/20 hover:bg-white hover:text-brand-950 transition-all"
-           >
-             <ArrowLeft className="w-4 h-4" /> Go Back
-           </button>
-        </div>
-
         <div className="absolute bottom-0 left-0 right-0 p-8 md:p-20">
-          <div className="max-w-7xl mx-auto">
-             <div className="flex flex-wrap gap-4 mb-8">
+          <div className="max-w-7xl mx-auto text-center">
+             <div className="flex flex-wrap justify-center gap-4 mb-8">
                 <span className="px-4 py-1.5 bg-brand-500 text-brand-950 text-[10px] font-black uppercase tracking-widest rounded-full">
                   {event.type}
                 </span>
@@ -122,113 +113,65 @@ export default function EventDetail_Page() {
                   {event.status}
                 </span>
              </div>
-             <h1 className="text-5xl md:text-8xl font-black text-slate-900 tracking-tighter leading-none italic uppercase mb-8">
+             <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter leading-none italic uppercase mb-8">
                {event.title}
              </h1>
-             <div className="flex flex-wrap gap-12 items-center">
-                <div className="flex items-center gap-3">
-                   <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-brand-600 shadow-xl">
-                      <Calendar className="w-6 h-6" />
-                   </div>
-                   <div>
-                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">DATE & TIME</p>
-                      <p className="text-sm font-bold text-slate-700">{event.date}</p>
-                   </div>
-                </div>
-                <div className="flex items-center gap-3">
-                   <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-brand-600 shadow-xl">
-                      <MapPin className="w-6 h-6" />
-                   </div>
-                   <div>
-                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">LOCATION</p>
-                      <p className="text-sm font-bold text-slate-700">{event.location}</p>
-                   </div>
-                </div>
-             </div>
           </div>
         </div>
       </div>
 
       {/* Content Section */}
-      <div className="max-w-7xl mx-auto px-8 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-20">
-          
-          <div className="lg:col-span-8">
-            <div className="mb-12">
-               <h2 className="text-xs font-black uppercase tracking-[0.4em] text-brand-600 mb-6 flex items-center gap-4">
-                  <span className="w-12 h-[2px] bg-brand-600"></span> Event Information
+      <div className="max-w-4xl mx-auto px-8 py-20">
+        <div className="space-y-12">
+            <div>
+               <h2 className="text-2xl font-black italic tracking-tighter uppercase text-slate-900 mb-2">
+                 {event.subtitle || "Exploring the Frontiers of Physics"}
                </h2>
+               <div className="flex flex-wrap gap-8 items-center mt-6 py-6 border-y border-slate-100">
+                  <div className="flex items-center gap-2 text-slate-500">
+                     <Calendar className="w-4 h-4 text-brand-600" />
+                     <span className="text-[10px] font-black uppercase tracking-widest">{event.date}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-500">
+                     <MapPin className="w-4 h-4 text-brand-600" />
+                     <span className="text-[10px] font-black uppercase tracking-widest">{event.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-500">
+                     <Tag className="w-4 h-4 text-brand-600" />
+                     <span className="text-[10px] font-black uppercase tracking-widest">{event.type}</span>
+                  </div>
+               </div>
+            </div>
+
+            <div className="prose prose-slate max-w-none">
                <p className="text-xl text-slate-600 font-medium leading-relaxed">
                  {event.description}
                </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-               <div className="p-8 bg-zinc-50 rounded-[2.5rem] border border-zinc-100 italic">
-                  <h4 className="text-sm font-black text-slate-900 uppercase tracking-tighter mb-4 flex items-center gap-2">
-                    <Info className="w-4 h-4 text-brand-600" /> Key Highlights
-                  </h4>
-                  <ul className="space-y-3 text-sm text-slate-500 font-bold uppercase tracking-widest">
-                    <li>• Industry Insights</li>
-                    <li>• Networking Session</li>
-                    <li>• Refreshments Provided</li>
-                    <li>• E-Certificates included</li>
-                  </ul>
-               </div>
-               <div className="p-8 bg-zinc-50 rounded-[2.5rem] border border-zinc-100 italic">
-                  <h4 className="text-sm font-black text-slate-900 uppercase tracking-tighter mb-4 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-brand-600" /> Schedule Details
-                  </h4>
-                  <ul className="space-y-3 text-sm text-slate-500 font-bold uppercase tracking-widest">
-                    <li>10:00 AM - Registration</li>
-                    <li>10:30 AM - Keynote</li>
-                    <li>12:00 PM - Q&A</li>
-                    <li>01:00 PM - Valedictory</li>
-                  </ul>
+               
+               <div className="mt-12 pt-12 border-t border-slate-100">
+                 {isPast ? (
+                   <div className="inline-block px-8 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase text-[10px] tracking-widest border border-slate-200">
+                      Registration Closed
+                   </div>
+                 ) : (
+                   <button 
+                     onClick={() => setIsRegistering(true)}
+                     className="px-10 py-5 bg-brand-600 text-white rounded-2xl font-black uppercase text-xs tracking-[0.2em] hover:bg-brand-700 transition-all shadow-xl shadow-brand-600/20 active:scale-95 flex items-center gap-3"
+                   >
+                     Register for Event <ArrowRight className="w-4 h-4" />
+                   </button>
+                 )}
                </div>
             </div>
-          </div>
 
-          <div className="lg:col-span-4">
-             <div className="sticky top-32">
-                <div className="bg-brand-950 p-10 rounded-[3rem] text-white shadow-2xl shadow-brand-950/20 border border-brand-900">
-                   <h3 className="text-2xl font-black italic tracking-tighter uppercase mb-6">Reservation</h3>
-                   <div className="space-y-6 mb-10">
-                      <div className="flex justify-between items-center py-4 border-b border-white/10">
-                         <span className="text-xs font-bold text-brand-300 uppercase tracking-widest">Ticket Type</span>
-                         <span className="font-black italic">Free entry</span>
-                      </div>
-                      <div className="flex justify-between items-center py-4 border-b border-white/10">
-                         <span className="text-xs font-bold text-brand-300 uppercase tracking-widest">Available Seats</span>
-                         <span className="font-black italic">{isPast ? '0' : 'Limited'}</span>
-                      </div>
-                   </div>
-
-                   {isPast ? (
-                     <div className="w-full py-6 bg-white/5 border border-white/10 rounded-2xl text-brand-300 font-black uppercase text-[10px] tracking-widest text-center">
-                        Registration Closed
-                     </div>
-                   ) : (
-                     <button 
-                       onClick={() => setIsRegistering(true)}
-                       className="w-full py-6 bg-brand-500 text-brand-950 rounded-2xl font-black uppercase text-sm tracking-[0.2em] hover:bg-white transition-all shadow-xl shadow-brand-950/20 active:scale-95"
-                     >
-                       Register Now
-                     </button>
-                   )}
-
-                   <div className="mt-8 flex items-center justify-center gap-6">
-                      <button className="p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                        <Share2 className="w-5 h-5 text-brand-300" />
-                      </button>
-                      <button className="p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
-                        <Tag className="w-5 h-5 text-brand-300" />
-                      </button>
-                   </div>
-                </div>
-             </div>
-          </div>
-
+            <div className="flex items-center gap-4 pt-10">
+               <button className="flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition-all text-[10px] font-black uppercase tracking-widest">
+                  <Share2 className="w-4 h-4" /> Share
+               </button>
+               <button className="flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition-all text-[10px] font-black uppercase tracking-widest">
+                  <Info className="w-4 h-4" /> Policy
+               </button>
+            </div>
         </div>
       </div>
 
