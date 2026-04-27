@@ -31,7 +31,10 @@ export default function Home_Page() {
   const [achievements, setAchievements] = useState<any[]>([]);
 
   useEffect(() => {
-    request('/api/events').then(setEvents);
+    request('/api/events').then(data => {
+      const sorted = [...data].sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      setEvents(sorted);
+    });
     request('/api/stats').then(setStats);
     request('/api/achievements').then(setAchievements);
   }, []);
